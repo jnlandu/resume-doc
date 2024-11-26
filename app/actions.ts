@@ -26,7 +26,8 @@ const groq =  new Groq({
 })
 
 export async function summarizePDF() {
-  const uploadsDir = join(process.cwd(), "public", "uploads")
+  try{
+    const uploadsDir = join(process.cwd(), "public", "uploads")
   const files = await readdir(uploadsDir)
   const pdfFiles = files.filter((file) => file.endsWith(".pdf"))
 
@@ -39,22 +40,33 @@ export async function summarizePDF() {
   const pdfBuffer =  readFileSync(pdfPath)
   const pdf = await parse(pdfBuffer)
   const pdfContent = pdf.text 
-  // const pdfContent = await readFile(pdfPath, "utf-8")
+
+  // console.log("Debugging latestPDF", pdfContent)
 
   console.log("Debugging pdfContent", pdfContent)
 
   const response = await groq.chat.completions.create({
     model: "mixtral-8x7b-32768",
     messages: [
-      { role: "system", content: "You are a helpful assistant that summarizes PDF content." },
+      { role: "system", content: "You are a helpful assistant that summarizes PDF content.\
+        Summarize the document like a professional and provide a concise summary. \
+        Summarize the document in the language it is written. \
+        If the document is in English, summarize it in English. \
+        If the document is in Spanish, summarize it in Spanish. \
+        If the document is in French, summarize it in French. \
+        Display prettified output where is possible. \
+        " },
       { role: "user", content: `Please summarize the following PDF content:\n\n${pdfContent}` }
     ],
     max_tokens: 150,
   })
   
   return { summary: response.choices[0].message.content }
+  }
+  catch(err){
+    console.log(err)
+  }
 }
-
 export async function chatWithPDF(messages: { role: string; content: string }[]) {
   const uploadsDir = join(process.cwd(), "public", "uploads")
   const files = await readdir(uploadsDir)
@@ -64,9 +76,21 @@ export async function chatWithPDF(messages: { role: string; content: string }[])
     return new Response("No PDF found", { status: 400 })
   }
 
-  // const latestPDF = pdfFiles[pdfFiles.length - 1]
-  // const pdfPath = join(uploadsDir, latestPDF)
-  // const pdfContent = await readFile(pdfPath, "utf-8")
+  if  (messages.length === 0) {
+    return new Response("No messages found", { status: 400 })
+  }
+
+  const messageRole : any  = messages[messages.length-1].role
+  const messageContent: any =  messages[messages.length-1].content
+  console.log("Debugging messages:", messages)
+  console.log(" -----------------------------")
+  console.log("Debugging messages content:", messageContent)
+  console.log("Debugging messages role:",  messageRole)
+
+  // console.log("Debugging messageRole:", messages[1].role)
+  // console.log("Debugging messageContent:", messages[1].content)
+
+
   const latestPDF = pdfFiles[pdfFiles.length - 1]
   const pdfPath = join(uploadsDir, latestPDF)
   const pdfBuffer =  readFileSync(pdfPath)
@@ -76,7 +100,31 @@ export async function chatWithPDF(messages: { role: string; content: string }[])
   const response = await groq.chat.completions.create({
     model: "mixtral-8x7b-32768",
     messages: [
-      { role: "system", content: `You are a helpful assistant that answers questions based on the following PDF content:\n\n${pdfContent}` },
+      { role: "system", content: `You are a helpful assistant that answers questions based on the following PDF content:\n\n${pdfContent}
+      Answer the questions based on the content of the PDF.
+      If you need more context, ask for it.
+      Don't provide answers that are not based on the content of the PDF.
+      Only answer in the language the user is asking the questoion in.
+      If the user asks in English, answer in English.
+      If the user asks in Spanish, answer in Spanish.
+      If the user asks in French, answer in French.
+      If the use asks in Lingala, answer in Lingala.
+      If the user asks in Swahili, answer in Swahili.
+      if the user asks in Kikongo, answer in Kikongo.
+      If the user asks in Tshiluba, answer in Tshiluba.
+      Display prettified output where is possible. 
+      Where you have bullet points, display them as bullet points.
+      Where you have numbered lists, display them as numbered lists.
+      Where you have tables, display them as tables.
+      Where you have code snippets, display them as code snippets.
+      Where you have images, display them as images.
+      Where you have links, display them as links.
+      Where you have bold text, display them as bold text.
+      Where you have italic text, display them as italic text.
+      Where you have underlined text, display them as underlined text.
+      Where you have titles or headings, display them as titles or headingss  
+      ` },
+      { role: messageRole, content: messageContent }
       // ...messages
     ],
     stream: true,
@@ -91,8 +139,8 @@ export async function chatWithPDF(messages: { role: string; content: string }[])
       controller.close()
     },
   })
-  console.log("Debugging response", response)
-  console.log("Debugging stream", stream)
+  // console.log("Debugging response:", response)
+  // console.log("Debugging stream:", stream)
   return new StreamingTextResponse(stream)
 }
 
