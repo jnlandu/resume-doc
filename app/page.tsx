@@ -14,7 +14,7 @@ export default function Home() {
     <main className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-8 text-center">PDF Summarizer and Chat</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
+        <div className="mb-4 p-9">
           <PDFUploader />
           <PDFViewer />
         </div>

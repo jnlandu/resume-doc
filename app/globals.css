@@ -98,3 +98,11 @@
   color: white;
 }
 
+#file-upload {
+  border: 1px solid red;
+  padding: 2px;
+}
+.upload-btn{
+  cursor: pointer;
+}
+

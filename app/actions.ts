@@ -3,7 +3,7 @@
 import { writeFile, readFile, readdir } from "fs/promises"
 import { join } from "path"
 import { StreamingTextResponse } from "ai"
-import { createGroq } from "@ai-sdk/groq"
+// import { createGroq } from "@ai-sdk/groq"
 import { Groq} from "groq-sdk"
 import parse from "pdf-parse/lib/pdf-parse";
 import { readFileSync } from "fs"
@@ -48,15 +48,16 @@ export async function summarizePDF() {
   const response = await groq.chat.completions.create({
     model: "mixtral-8x7b-32768",
     messages: [
-      { role: "system", content: "You are a helpful assistant that summarizes PDF content.\
+      { role: "system", content: "You are a helpful assistant that summarizes PDF content and documents. Follow the instructions below:\
         Summarize the document like a professional and provide a concise summary. \
+        Don't start your summary with a sentence already in the document. \
         Summarize the document in the language it is written. \
         If the document is in English, summarize it in English. \
         If the document is in Spanish, summarize it in Spanish. \
         If the document is in French, summarize it in French. \
         Display prettified output where is possible. \
         " },
-      { role: "user", content: `Please summarize the following PDF content:\n\n${pdfContent}` }
+      { role: "user", content: `Please summarize the following document:\n\n${pdfContent}` }
     ],
     max_tokens: 150,
   })
