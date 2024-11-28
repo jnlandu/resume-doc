@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "patch-package" 
   },
   "dependencies": {
     "@ai-sdk/groq": "^1.0.3",
@@ -25,6 +26,8 @@
     "groq-sdk": "^0.8.0",
     "lucide-react": "^0.263.1",
     "next": "^15.0.3",
+    "patch-package": "^8.0.0",
+    "pdf-parse": "^1.1.1",
     "pdfjs-dist": "^3.11.174",
     "postcss": "8.4.27",
     "react": "18.2.0",
