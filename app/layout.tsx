@@ -5,7 +5,7 @@ import { Inter } from "next/font/google"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "PDF Summarizer and Chat",
+  title: "Summarize and chat with your documents",
   description: "Upload a PDF, get a summary, and chat with its content.",
 }
 
@@ -16,7 +16,22 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+
+        {children}
+
+        <footer className="text-center text-gray-500 text-sm mt-8">
+          <p>
+            Made with ❤️ by{" "}
+            <a
+              href="https://twitter.com/ValentinMabiala"
+              className="text-blue-500 hover:underline"
+            >
+             okapi AI
+            </a>
+          </p>
+        </footer>
+      </body>
     </html>
   )
 }

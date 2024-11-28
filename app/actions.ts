@@ -5,7 +5,7 @@ import { join } from "path"
 import { StreamingTextResponse } from "ai"
 // import { createGroq } from "@ai-sdk/groq"
 import { Groq} from "groq-sdk"
-import parse from "pdf-parse/lib/pdf-parse";
+import parse from "pdf-parse"
 import { readFileSync } from "fs"
 
 
@@ -43,7 +43,7 @@ export async function summarizePDF() {
 
   // console.log("Debugging latestPDF", pdfContent)
 
-  console.log("Debugging pdfContent", pdfContent)
+  // console.log("Debugging pdfContent", pdfContent)
 
   const response = await groq.chat.completions.create({
     model: "mixtral-8x7b-32768",
@@ -83,10 +83,10 @@ export async function chatWithPDF(messages: { role: string; content: string }[])
 
   const messageRole : any  = messages[messages.length-1].role
   const messageContent: any =  messages[messages.length-1].content
-  console.log("Debugging messages:", messages)
-  console.log(" -----------------------------")
-  console.log("Debugging messages content:", messageContent)
-  console.log("Debugging messages role:",  messageRole)
+  // console.log("Debugging messages:", messages)
+  // console.log(" -----------------------------")
+  // console.log("Debugging messages content:", messageContent)
+  // console.log("Debugging messages role:",  messageRole)
 
   // console.log("Debugging messageRole:", messages[1].role)
   // console.log("Debugging messageContent:", messages[1].content)

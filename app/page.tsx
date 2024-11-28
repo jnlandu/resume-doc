@@ -5,14 +5,17 @@ import Summary from "@/components/summary"
 import Chat from "@/components/chat"
 
 export const metadata: Metadata = {
-  title: "PDF Summarizer and Chat",
+  title: "Summarize and chat with your documents",
   description: "Upload a PDF, get a summary, and chat with its content.",
 }
 
 export default function Home() {
   return (
     <main className="container mx-auto p-4">
-      <h1 className="text-4xl font-bold mb-8 text-center">PDF Summarizer and Chat</h1>
+      <h1 className="text-4xl font-bold  text-center w-30 mb-0">ResumDoc</h1>
+      <p className="text-center text-lg text-gray-600 mt-0 mb-2">
+        Upload a PDF, get a summary, and chat with its content.
+      </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="mb-4 p-9">
           <PDFUploader />

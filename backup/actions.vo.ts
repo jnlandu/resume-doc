@@ -35,7 +35,7 @@ export async function summarizePDF() {
   const pdfPath = join(uploadsDir, latestPDF)
   const pdfContent = await readFile(pdfPath, "utf-8")
 
-  console.log("Debugging pdfContent", pdfContent)
+  // console.log("Debugging pdfContent", pdfContent)
 
   const response = await groq.chat.completions.create({
     model: "mixtral-8x7b-32768",
@@ -80,8 +80,8 @@ export async function chatWithPDF(messages: { role: string; content: string }[])
       controller.close()
     },
   })
-  console.log("Debugging response", response)
-  console.log("Debugging stream", stream)
+  // console.log("Debugging response", response)
+  // console.log("Debugging stream", stream)
   return new StreamingTextResponse(stream)
 }
 
