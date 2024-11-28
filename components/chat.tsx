@@ -5,38 +5,36 @@ import { useChat } from "ai/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import { FaCopy, FaVolumeUp, FaVolumeMute } from 'react-icons/fa'; // Added FaVolumeMute icon
+import { FaCopy, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 
 const Chat = () => {
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     api: "/api/chat",
   });
 
-  // State to manage editable input and speech synthesis
   const [editableInput, setEditableInput] = useState(input);
-  const [isSpeaking, setIsSpeaking] = useState(false); // State to track if the app is reading aloud
-  const [utterance, setUtterance] = useState(null); // Manage the speech utterance
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [utterance, setUtterance] = useState(null);
 
-  const handleEditInput = (message) => {
+  const handleEditInput = (message: any) => {
     if (message.role === "user") {
-      setEditableInput(message.content); // Set input to last user message for editing
+      setEditableInput(message.content);
     }
   };
 
-  const copyToClipboard = (content) => {
-    navigator.clipboard.writeText(content).then(() => {
-      alert("Copied to clipboard!");
+  const copyToClipboard = (content: any) => {
+    // Use the Clipboard API without showing an alert
+    navigator.clipboard.writeText(content).catch(err => {
+      console.error('Failed to copy: ', err);
     });
   };
 
-  const toggleReadAloud = (content) => {
-    // If currently speaking, stop the speech
+  const toggleReadAloud = (content: any) => {
     if (isSpeaking) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
       setUtterance(null);
     } else {
-      // If not speaking, start speech synthesis
       const newUtterance = new SpeechSynthesisUtterance(content);
       newUtterance.onend = () => {
         setIsSpeaking(false);
@@ -88,7 +86,7 @@ const Chat = () => {
           onSubmit={(e) => {
             e.preventDefault();
             handleSubmit(e);
-            setEditableInput(''); // Clear input after submit
+            setEditableInput('');
           }}
           className="flex w-full space-x-2"
         >
@@ -96,7 +94,7 @@ const Chat = () => {
             value={editableInput}
             onChange={(e) => {
               setEditableInput(e.target.value);
-              handleInputChange(e); // Keep original input handling
+              handleInputChange(e);
             }}
             placeholder="Ask a question about the PDF..."
             disabled={isLoading}
@@ -104,12 +102,11 @@ const Chat = () => {
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Thinking..." : "Send"}
           </Button>
-          {/* Button to edit last user message */}
-          {messages.length > 0 && messages[messages.length - 1].role === "user" && (
+          {/* {messages.length > 0 && messages[messages.length - 1].role === "user" && (
             <Button onClick={() => handleEditInput(messages[messages.length - 1])}>
               Edit Last Input
             </Button>
-          )}
+          )} */}
         </form>
       </CardFooter>
     </Card>
