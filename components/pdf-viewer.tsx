@@ -58,7 +58,7 @@ const PDFViewer = () => {
         <button 
           onClick={() => setPageNumber(prev => Math.max(prev - 1, 1))} 
           disabled={pageNumber <= 1} 
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+          className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${pageNumber <= 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           Previous
         </button>
@@ -66,7 +66,7 @@ const PDFViewer = () => {
         <button 
           onClick={() => setPageNumber(prev => Math.min(prev + 1, numPages!))} 
           disabled={pageNumber >= (numPages || 0)} 
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+          className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${pageNumber >= (numPages || 0) ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           Next
         </button>
