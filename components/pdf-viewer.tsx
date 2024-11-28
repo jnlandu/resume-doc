@@ -1,64 +1,78 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { Document, Page, pdfjs } from "react-pdf"
+import { useState, useEffect } from "react";
+import { Document, Page, pdfjs } from "react-pdf";
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
-// pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
-// pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-// Use the local worker script
-// pdfjs.GlobalWorkerOptions.workerSrc = require('pdfjs-dist/build/pdf.worker.min.js');
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
- 
-const PDFViewer = ()=>{
-  const [numPages, setNumPages] = useState<number | null>(null)
-  const [pdfPath, setPdfPath] = useState<string | null>(null)
-  const [pageNumber, setPageNumber] = useState(1)
+
+const PDFViewer = () => {
+  const [numPages, setNumPages] = useState<number | null>(null);
+  const [pdfPath, setPdfPath] = useState<string | null>(null);
+  const [pageNumber, setPageNumber] = useState(1);
 
   useEffect(() => {
     const fetchLatestPDF = async () => {
-      const response = await fetch("/api/latest-pdf")
-      const data = await response.json()
+      const response = await fetch("/api/latest-pdf");
+      const data = await response.json();
       if (data.path) {
-        setPdfPath(data.path)
+        setPdfPath(data.path);
       }
-    }
+    };
 
-    fetchLatestPDF()
-  }, [])
+    fetchLatestPDF();
+  }, []);
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
-    setNumPages(numPages)
+    setNumPages(numPages);
   }
 
   if (!pdfPath) {
-    return <div>No PDF uploaded yet.</div>
+    return <div className="text-center text-gray-600 mt-4">No PDF uploaded yet.</div>;
   }
 
   if (numPages! > 4) {
     return (
-       <div className="border rounded-lg p-4 mt-4">
-          <p className="text-green-950 sm:text-lg">
-            Only two page PDFs are supported.<br/>
+      <div className="border rounded-lg p-4 mt-4 bg-red-100 text-red-800">
+        <p className="text-lg font-semibold">
+          Only two-page PDFs are supported.<br />
           Subscribe to the premium plan to unlock this feature.
-          </p>
+        </p>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="border rounded-lg p-4 mt-4">
-      <Document file={pdfPath} onLoadSuccess={onDocumentLoadSuccess}
-      >
-        {Array.from(new Array(numPages), (el, index) => (
-          <Page 
-          key={`page_${index + 1}`} pageNumber={index + 1} width={300} 
-          />
-        ))}
+    <div className="border rounded-lg p-4 mt-4 bg-white shadow-md">
+      <Document file={pdfPath} onLoadSuccess={onDocumentLoadSuccess}>
+        {/* Render only the current page */}
+        <Page 
+          key={`page_${pageNumber}`} 
+          pageNumber={pageNumber} 
+          width={600} // Adjust width as needed
+          className="my-4 border-b border-gray-300"
+        />
       </Document>
+      <div className="flex justify-between mt-4">
+        <button 
+          onClick={() => setPageNumber(prev => Math.max(prev - 1, 1))} 
+          disabled={pageNumber <= 1} 
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <span className="self-center text-gray-700">Page {pageNumber} of {numPages}</span>
+        <button 
+          onClick={() => setPageNumber(prev => Math.min(prev + 1, numPages!))} 
+          disabled={pageNumber >= (numPages || 0)} 
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default PDFViewer
+export default PDFViewer;
