@@ -5,7 +5,7 @@ import { join } from "path"
 import { StreamingTextResponse } from "ai"
 // import { createGroq } from "@ai-sdk/groq"
 import { Groq} from "groq-sdk"
-import parse from "pdf-parse"
+import * as parse from "pdf-parse/lib/pdf-parse.js"
 import { readFileSync } from "fs"
 
 
