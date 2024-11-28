@@ -12,7 +12,7 @@ const  Summary = ()=> {
   const handleSummarize = async () => {
     setLoading(true)
     const result = await summarizePDF()
-    setSummary(result.summary)
+    setSummary(result!.summary)
     setLoading(false)
   }
 
@@ -23,7 +23,9 @@ const  Summary = ()=> {
       </CardHeader>
       <CardContent>
         {summary ? (
-          <p>{summary}</p>
+          <p className="text-sm text-gray-700 text-justify">
+            {summary}
+          </p>
         ) : (
           <Button onClick={handleSummarize} disabled={loading}>
             {loading ? "Summarizing..." : "Generate Summary"}

@@ -5,8 +5,11 @@ import { join } from "path"
 import { StreamingTextResponse } from "ai"
 // import { createGroq } from "@ai-sdk/groq"
 import { Groq} from "groq-sdk"
-import * as parse from "pdf-parse/lib/pdf-parse.js"
+// import * as parse from "pdf-parse"
 import { readFileSync } from "fs"
+
+
+const parse = require("pdf-parse")
 
 
 const  uploadPDF = async (formData: FormData)  => {
@@ -14,7 +17,10 @@ const  uploadPDF = async (formData: FormData)  => {
   const bytes = await file.arrayBuffer()
   const buffer : any  = Buffer.from(bytes)
 
-  const path = join("public", "uploads", file.name)
+  const uploadsDir = join("public", "uploads")
+  const files = await readdir(uploadsDir)
+  const fileCount = files.length
+  const path = join(uploadsDir, `file_${fileCount + 1}.pdf`)
   await writeFile(path, buffer)
 
   return { success: true, path }

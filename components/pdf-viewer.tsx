@@ -14,6 +14,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 const PDFViewer = ()=>{
   const [numPages, setNumPages] = useState<number | null>(null)
   const [pdfPath, setPdfPath] = useState<string | null>(null)
+  const [pageNumber, setPageNumber] = useState(1)
 
   useEffect(() => {
     const fetchLatestPDF = async () => {
@@ -35,11 +36,25 @@ const PDFViewer = ()=>{
     return <div>No PDF uploaded yet.</div>
   }
 
+  if (numPages! > 4) {
+    return (
+       <div className="border rounded-lg p-4 mt-4">
+          <p className="text-green-950 sm:text-lg">
+            Only two page PDFs are supported.<br/>
+          Subscribe to the premium plan to unlock this feature.
+          </p>
+      </div>
+    )
+  }
+
   return (
     <div className="border rounded-lg p-4 mt-4">
-      <Document file={pdfPath} onLoadSuccess={onDocumentLoadSuccess}>
+      <Document file={pdfPath} onLoadSuccess={onDocumentLoadSuccess}
+      >
         {Array.from(new Array(numPages), (el, index) => (
-          <Page key={`page_${index + 1}`} pageNumber={index + 1} width={300} />
+          <Page 
+          key={`page_${index + 1}`} pageNumber={index + 1} width={300} 
+          />
         ))}
       </Document>
     </div>
