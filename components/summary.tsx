@@ -40,6 +40,11 @@ const Summary = () => {
     }
   };
 
+  const handleRestart = () => {
+    setSummary(null); // Reset the summary
+    setWordCount(100); // Reset the word count to default
+  };
+
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 border-b">
@@ -94,26 +99,50 @@ const Summary = () => {
         {/* Action Buttons */}
         {summary && (
           <div className="flex space-x-2">
-            <Button onClick={handleCopy} className="bg-green-500 hover:bg-green-600 text-white text-sm px-2 py-1 rounded-md">
-              <Copy className="mr-1 h-4 w-4" /> 
-            </Button>
-            <Button onClick={handleDownload} className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-2 py-1 rounded-md">
-              <Download className="mr-1 h-4 w-4" /> 
-            </Button>
-            {/* Placeholder for feedback buttons */}
-            <Button className="bg-yellow-500 hover:bg-yellow-600 text-white text-sm px-2 py-1 rounded-md">
-              <ThumbsUp className="mr-1 h-4 w-4" /> 
-            </Button>
-            <Button className="bg-red-500 hover:bg-red-600 text-white text-sm px-2 py-1 rounded-md">
-              <ThumbsDown className="mr-1 h-4 w-4" /> 
-            </Button>
+            {/* Copy Button */}
+            <div className="relative group">
+              <Button onClick={handleCopy} className="bg-green-500 hover:bg-green-600 text-white text-sm px-2 py-1 rounded-md">
+                <Copy className="mr-1 h-4 w-4" /> 
+              </Button>
+              <span className="absolute left-[50%] transform -translate-x-[50%] bottom-full mb-1 hidden group-hover:block bg-gray-800 text-white text-xs rounded px-2 py-1">Copy Summary</span>
+            </div>
+
+            {/* Download Button */}
+            <div className="relative group">
+              <Button onClick={handleDownload} className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-2 py-1 rounded-md">
+                <Download className="mr-1 h-4 w-4" /> 
+              </Button>
+              <span className="absolute left-[50%] transform -translate-x-[50%] bottom-full mb-1 hidden group-hover:block bg-gray-800 text-white text-xs rounded px-2 py-1">Download</span>
+            </div>
+
+            {/* Feedback Buttons */}
+            <div className="relative group">
+              <Button className="bg-yellow-500 hover:bg-yellow-600 text-white text-sm px-2 py-1 rounded-md">
+                <ThumbsUp className="mr-1 h-4 w-4" /> 
+              </Button>
+              <span className="absolute left-[50%] transform -translate-x-[50%] bottom-full mb-1 hidden group-hover:block bg-gray-800 text-white text-xs rounded px-2 py-1">Like</span>
+            </div>
+
+            <div className="relative group">
+              <Button className="bg-red-500 hover:bg-red-600 text-white text-sm px-2 py-1 rounded-md">
+                <ThumbsDown className="mr-1 h-4 w-4" /> 
+              </Button>
+              <span className="absolute left-[50%] transform -translate-x-[50%] bottom-full mb-1 hidden group-hover:block bg-gray-800 text-white text-xs rounded px-2 py-1">Dislike</span>
+            </div>
+
+            {/* Restart Button */}
+            <div className="relative group">
+              <Button onClick={handleRestart} className="bg-gray-500 hover:bg-gray600 text-white text-sm px -2 py -1 rounded-md">
+                Restart
+              </Button>
+              <span className="absolute left-[50%] transform -translate-x-[50%] bottom-full mb -1 hidden group-hover:block bg-gray -800 text-white text-xs rounded px -2 py -1">Restart Summary</span>
+            </div>
           </div>
         )}
       </CardFooter>
-
       {!summary && !loading && (
-        <CardFooter className="border-t bg-gray-50 p-4 text-center">
-          <p className="text-sm text-gray-500">Summary will appear here after generation</p>
+        <CardFooter className="border-t bg-gray -50 p -4 text-center">
+          <p className="text-sm text-gray -500 mt-2">Summary will appear here after generation</p>
         </CardFooter>
       )}
     </Card>
