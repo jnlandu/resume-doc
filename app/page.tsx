@@ -50,7 +50,6 @@ export default function Home() {
         </div>
       </div>
 
-      
       <section
   id="about"
   className="mt-12 bg-white shadow-md rounded-xl p-10 lg:px-16 lg:py-12 max-w-5xl mx-auto"
@@ -68,6 +67,72 @@ export default function Home() {
     documents, <strong className="text-gray-900">ResumDoc</strong> delivers the tools you need to
     work smarter, not harder.
   </p>
+</section>
+
+{/* User Feedback Section */}
+<section
+  id="feedback"
+  className="mt-16 bg-gray-50 shadow-md rounded-xl p-10 lg:px-16 lg:py-12 max-w-5xl mx-auto"
+>
+  <h2 className="text-3xl font-extrabold mb-6 text-gray-900 border-b-4 pb-3 border-blue-500">
+    What Our Users Are Saying
+  </h2>
+  <div className="space-y-6">
+    {/* Feedback Card */}
+    <div className="bg-white shadow rounded-lg p-6">
+      <div className="flex items-center mb-4">
+        <img
+          src="https://via.placeholder.com/40"
+          alt="User Avatar"
+          className="w-10 h-10 rounded-full"
+        />
+        <div className="ml-4">
+          <p className="text-gray-800 font-semibold">John Doe</p>
+          <p className="text-sm text-gray-500">@john_doe</p>
+        </div>
+      </div>
+      <p className="text-gray-700 leading-relaxed">
+        "ResumDoc has completely changed the way I handle my research papers. Summarizing PDFs
+        is now a breeze. Highly recommended!"
+      </p>
+    </div>
+
+    <div className="bg-white shadow rounded-lg p-6">
+      <div className="flex items-center mb-4">
+        <img
+          src="https://via.placeholder.com/40"
+          alt="User Avatar"
+          className="w-10 h-10 rounded-full"
+        />
+        <div className="ml-4">
+          <p className="text-gray-800 font-semibold">Jane Smith</p>
+          <p className="text-sm text-gray-500">@jane_smith</p>
+        </div>
+      </div>
+      <p className="text-gray-700 leading-relaxed">
+        "As a student, ResumDoc has been a lifesaver! It’s like having a personal assistant for
+        summarizing all my study materials."
+      </p>
+    </div>
+
+    <div className="bg-white shadow rounded-lg p-6">
+      <div className="flex items-center mb-4">
+        <img
+          src="https://via.placeholder.com/40"
+          alt="User Avatar"
+          className="w-10 h-10 rounded-full"
+        />
+        <div className="ml-4">
+          <p className="text-gray-800 font-semibold">Michael Lee</p>
+          <p className="text-sm text-gray-500">@mikelee</p>
+        </div>
+      </div>
+      <p className="text-gray-700 leading-relaxed">
+        "The chat feature is a game-changer. I can interact with my PDFs and get summaries
+        instantly. ResumDoc is worth every penny!"
+      </p>
+    </div>
+  </div>
 </section>
 
 {/* Contact Section */}
