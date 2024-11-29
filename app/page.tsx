@@ -44,21 +44,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* About Section */}
-      <section id="about" className="mt-12 bg-white shadow-md rounded-xl p-10 lg:px-16 lg:py-12 max-w-5xl mx-auto">
-        <h2 className="text-3xl font-extrabold mb-6 text-gray-900 border-b-4 pb-3 border-blue-500">About Us</h2>
-        <p className="text-lg text-gray-700 leading-relaxed mb-4">
-          <strong className="text-gray-900">ResumDoc</strong> is a cutting-edge tool designed to help
-          you seamlessly summarize and interact with your PDF documents. Our goal is to provide an
-          intuitive, powerful platform that simplifies document workflows and boosts productivity.
-        </p>
-        <p className="text-lg text-gray-700 leading-relaxed">
-          Whether you're a student summarizing research papers or a professional organizing critical
-          documents, <strong className="text-gray-900">ResumDoc</strong> delivers the tools you need to
-          work smarter, not harder.
-        </p>
-      </section>
-
       {/* User Feedback Section */}
       <section id="feedback" className="mt-16 bg-white shadow-md rounded-xl p-10 lg:px-16 lg:py-12 max-w-5xl mx-auto">
         <h2 className="text-3xl font-extrabold mb-6 text-gray-900 border-b-4 pb-3 border-blue-500">What Our Users Are Saying</h2>
@@ -84,7 +69,7 @@ export default function Home() {
               imageUrl: "https://via.placeholder.com/150/000000/FFFFFF/?text=ML", // Placeholder for black-and-white image
             },
           ].map((user) => (
-            <div key={user.username} className="bg-gray-100 shadow rounded-lg p-6 flex items-start">
+            <div key={user.username} className="bg-gray-100 shadow-lg rounded-lg p-6 flex items-start transition-transform transform hover:-translate-y-1">
               <img src={user.imageUrl} alt={`${user.name}'s Avatar`} className="w-[60px] h-[60px] rounded-full border border-gray-300 mr-4" />
               <div>
                 <p className="text-gray-800 font-semibold">{user.name}</p>
@@ -108,7 +93,7 @@ export default function Home() {
             <a href="mailto:support@resumdoc.com" className="text-blue-600 hover:text-blue-800 underline">support@resumdoc.com</a>
           </li>
           <li>
-            <strong className="text-gray-900">Phone:</strong>{' '}
+            <strong className="text-gray -900">Phone:</strong>{' '}
             <span>(123) 456 - 7890</span>
           </li>
           <li>
