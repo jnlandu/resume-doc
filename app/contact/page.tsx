@@ -1,7 +1,6 @@
 // pages/contact.tsx
-
-
 'use client';
+
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -12,22 +11,35 @@ const Contact = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(""); // Reset error state
 
-    // Simulate sending data to a backend
     try {
-      // Replace this with actual API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setSuccess(true);
-      // Reset form fields
-      setName("");
-      setEmail("");
-      setMessage("");
+      const response = await fetch('/api/contact', { // Assuming you have an API route
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, message }),
+      });
+
+      if (!response.ok) throw new Error("Network response was not ok");
+
+      const result = await response.json();
+      if (result.success) {
+        setSuccess(true);
+        // Reset form fields
+        setName("");
+        setEmail("");
+        setMessage("");
+      } else {
+        throw new Error(result.message);
+      }
     } catch (error) {
       console.error("Failed to send message:", error);
+      setError("Failed to send message. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -79,6 +91,12 @@ const Contact = () => {
       {success && (
         <div className="mt-4 text-center text-green-600">
           Your message has been sent successfully!
+        </div>
+      )}
+
+      {error && (
+        <div className="mt-4 text-center text-red-600">
+          {error}
         </div>
       )}
     </div>

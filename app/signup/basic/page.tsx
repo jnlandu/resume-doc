@@ -33,7 +33,7 @@ const BasicSignup = () => {
         alert(result.message); // Show error message
       }
     } catch (error) {
-      console.error("Signup failed:", error);
+      console.log("Signup failed:", error);
     } finally {
       setLoading(false);
     }
