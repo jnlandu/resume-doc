@@ -1,25 +1,47 @@
-// pages/signup/basic.tsx
+// pages/signup/enterprise.tsx
+
+'use client';
 
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // Import useRouter for redirection
 import { Button } from "@/components/ui/button";
 
-const BasicSignup = () => {
+const EnterpriseSignup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   
-  const handleSubmit = async (e) => {
+  const router = useRouter(); // Initialize router for redirection
+
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
-    // Implement signup logic here
-    console.log("Signing up with:", { email, password });
-    // After successful signup, redirect or show a success message
-    setLoading(false);
+    
+    try {
+      const response = await fetch('http://localhost:8080/signup/enterprise', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Redirect to a success page or dashboard
+        router.push('/success'); // Assuming you have a success page
+      } else {
+        alert(result.message); // Show error message
+      }
+    } catch (error) {
+      console.error("Signup failed:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-4xl font-bold text-center text-blue-600 mb-6">Sign Up for Basic Plan</h1>
+      <h1 className="text-4xl font-bold text-center text-blue-600 mb-6">Sign Up for Enterprise Plan</h1>
       <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white shadow-lg rounded-lg p-6">
         <div className="mb-4">
           <label className="block text-gray-700">Email</label>
@@ -49,4 +71,4 @@ const BasicSignup = () => {
   );
 };
 
-export default BasicSignup;
+export default EnterpriseSignup;

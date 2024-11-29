@@ -1,6 +1,8 @@
 // pages/signup/pro.tsx
+'use client';
 
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // Import useRouter for redirection
 import { Button } from "@/components/ui/button";
 
 const ProSignup = () => {
@@ -8,13 +10,32 @@ const ProSignup = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   
-  const handleSubmit = async (e) => {
+  const router = useRouter(); // Initialize router for redirection
+
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
-    // Implement signup logic here
-    console.log("Signing up with:", { email, password });
-    // After successful signup, redirect or show a success message
-    setLoading(false);
+    
+    try {
+      const response = await fetch('http://localhost:8080/signup/pro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Redirect to a success page or dashboard
+        router.push('/success'); // Assuming you have a success page
+      } else {
+        alert(result.message); // Show error message
+      }
+    } catch (error) {
+      console.error("Signup failed:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
