@@ -20,9 +20,7 @@ export default function Home() {
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-white shadow-lg rounded-lg p-6 mb-4">
-          <h2 className="text-xl font-semibold mb-4">Upload Your PDF</h2>
           <PDFUploader />
-          {/* <h2 className="text-xl font-semibold mt-6 mb-4">View Your PDF</h2> */}
           <PDFViewer />
         </div>
         <div className="bg-white shadow-lg rounded-lg p-6 space-y-8">
