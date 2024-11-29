@@ -9,11 +9,12 @@ import { Loader2, Download, Copy, ThumbsUp, ThumbsDown } from "lucide-react"; //
 const Summary = () => {
   const [summary, setSummary] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [wordCount, setWordCount] = useState<number>(100); // Default word count
 
   const handleSummarize = async () => {
     setLoading(true);
     try {
-      const result = await summarizePDF();
+      const result = await summarizePDF(wordCount); // Pass word count to the function
       setSummary(result!.summary);
     } catch (error) {
       console.error("Failed to generate summary:", error);
@@ -76,27 +77,40 @@ const Summary = () => {
         )}
       </CardContent>
 
-      {/* Action Buttons */}
-      {summary && (
-        <CardFooter className="border-t bg-gray-50 p-4 flex justify-center items-center">
+      {/* Word Count Input */}
+      <CardFooter className="border-t bg-gray-50 p-4 flex justify-between items-center">
+        <div className="flex items-center space-x-2">
+          <label htmlFor="wordCount" className="text-gray-700">Word Count:</label>
+          <input
+            type="number"
+            id="wordCount"
+            value={wordCount}
+            onChange={(e) => setWordCount(Number(e.target.value))}
+            min={1}
+            className="border rounded-md p-1 w-[60px] text-center"
+          />
+        </div>
+
+        {/* Action Buttons */}
+        {summary && (
           <div className="flex space-x-2">
-            <Button onClick={handleCopy} className=" bg-green-500 hover:bg-green-600 text-white">
-              <Copy className="mr-2" width={16} height={16} /> 
+            <Button onClick={handleCopy} className="bg-green-500 hover:bg-green-600 text-white text-sm px-2 py-1 rounded-md">
+              <Copy className="mr-1 h-4 w-4" /> 
             </Button>
-            <Button onClick={handleDownload} className="flex items-center bg-blue-500 hover:bg-blue-600 text-white">
-              <Download className="mr-2" width={16} height={16} /> 
+            <Button onClick={handleDownload} className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-2 py-1 rounded-md">
+              <Download className="mr-1 h-4 w-4" /> 
             </Button>
             {/* Placeholder for feedback buttons */}
-            <Button className=" bg-yellow-500 hover:bg-yellow-600 text-white">
-              <ThumbsUp className="mr-2" width={16} height={16} /> 
+            <Button className="bg-yellow-500 hover:bg-yellow-600 text-white text-sm px-2 py-1 rounded-md">
+              <ThumbsUp className="mr-1 h-4 w-4" /> 
             </Button>
-            <Button className=" bg-red-500 hover:bg-red-600 text-white">
-              <ThumbsDown className="mr-2" width={16} height={16} /> 
+            <Button className="bg-red-500 hover:bg-red-600 text-white text-sm px-2 py-1 rounded-md">
+              <ThumbsDown className="mr-1 h-4 w-4" /> 
             </Button>
           </div>
-        </CardFooter>
-      )}
-      
+        )}
+      </CardFooter>
+
       {!summary && !loading && (
         <CardFooter className="border-t bg-gray-50 p-4 text-center">
           <p className="text-sm text-gray-500">Summary will appear here after generation</p>
