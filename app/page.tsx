@@ -51,27 +51,67 @@ export default function Home() {
       </div>
 
       
-      {/* About Section */}
-      <section id="about" className="mt-10 bg-white shadow-md rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">About Us</h2>
-        <p className="text-gray-700">
-          ResumDoc is a powerful tool designed to help you summarize and interact with your PDF documents effortlessly. Our mission is to provide users with an intuitive platform that simplifies document management and enhances productivity.
-        </p>
-        <p className="text-gray-700 mt-2">
-          Whether you're a student looking to summarize research papers or a professional managing important documents, ResumDoc offers the features you need to work smarter.
-        </p>
-      </section>
+      <section
+  id="about"
+  className="mt-12 bg-white shadow-md rounded-xl p-10 lg:px-16 lg:py-12 max-w-5xl mx-auto"
+>
+  <h2 className="text-3xl font-extrabold mb-6 text-gray-900 border-b-4 pb-3 border-blue-500">
+    About Us
+  </h2>
+  <p className="text-lg text-gray-700 leading-relaxed mb-4">
+    <strong className="text-gray-900">ResumDoc</strong> is a cutting-edge tool designed to help
+    you seamlessly summarize and interact with your PDF documents. Our goal is to provide an
+    intuitive, powerful platform that simplifies document workflows and boosts productivity.
+  </p>
+  <p className="text-lg text-gray-700 leading-relaxed">
+    Whether you're a student summarizing research papers or a professional organizing critical
+    documents, <strong className="text-gray-900">ResumDoc</strong> delivers the tools you need to
+    work smarter, not harder.
+  </p>
+</section>
 
-      {/* Contact Section */}
-      <section id="contact" className="mt-6 bg-white shadow-md rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Contact Us</h2>
-        <p className="text-gray-700 mb-2">We would love to hear from you! If you have any questions or feedback, please reach out:</p>
-        <ul className="list-disc list-inside text-gray-700">
-          <li>Email: support@resumdoc.com</li>
-          <li>Phone: (123) 456-7890</li>
-          <li>Address: 123 Document Lane, Suite 100, Cityville, ST 12345</li>
-        </ul>
-      </section>
+{/* Contact Section */}
+<section
+  id="contact"
+  className="mt-16 bg-gray-50 shadow-md rounded-xl p-10 lg:px-16 lg:py-12 max-w-5xl mx-auto"
+>
+  <h2 className="text-3xl font-extrabold mb-6 text-gray-900 border-b-4 pb-3 border-blue-500">
+    Contact Us
+  </h2>
+  <p className="text-lg text-gray-700 leading-relaxed mb-6">
+    We'd love to hear from you! Have questions, suggestions, or feedback? Get in touch with us
+    via the following channels:
+  </p>
+  <ul className="space-y-4 text-lg">
+    <li>
+      <strong className="text-gray-900">Email:</strong>{' '}
+      <a
+        href="mailto:support@resumdoc.com"
+        className="text-blue-600 hover:text-blue-800 underline"
+      >
+        support@resumdoc.com
+      </a>
+    </li>
+    <li>
+      <strong className="text-gray-900">Phone:</strong>{' '}
+      <span>(123) 456-7890</span>
+    </li>
+    <li>
+      <strong className="text-gray-900">Address:</strong>{' '}
+      <span>123 Document Lane, Suite 100, Cityville, ST 12345</span>
+    </li>
+  </ul>
+  <div className="mt-8">
+    <a
+      href="mailto:support@resumdoc.com"
+      className="inline-block bg-blue-600 text-white text-lg font-medium py-3 px-6 rounded-lg shadow hover:bg-blue-700 transition"
+    >
+      Get in Touch
+    </a>
+  </div>
+</section>
+
+
     </main>
   );
 }
