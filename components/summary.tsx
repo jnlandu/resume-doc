@@ -1,26 +1,26 @@
 'use client';
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
-import { summarizePDF } from "@/app/actions"
-import { Loader2 } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { summarizePDF } from "@/app/actions";
+import { Loader2 } from "lucide-react";
 
 const Summary = () => {
-  const [summary, setSummary] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [summary, setSummary] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSummarize = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const result = await summarizePDF()
-      setSummary(result!.summary)
+      const result = await summarizePDF();
+      setSummary(result!.summary);
     } catch (error) {
-      console.error("Failed to generate summary:", error)
+      console.error("Failed to generate summary:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -34,7 +34,7 @@ const Summary = () => {
           )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="min-h-[200px] flex items-center justify-center p-6">
+      <CardContent className="flex flex-col p-6" style={{ maxHeight: '300px', overflowY: 'auto' }}>
         {loading ? (
           <div className="flex flex-col items-center space-y-4">
             <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
@@ -68,7 +68,7 @@ const Summary = () => {
         </CardFooter>
       )}
     </Card>
-  )
-}
+  );
+};
 
-export default Summary
+export default Summary;
