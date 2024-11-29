@@ -1,6 +1,6 @@
 // pages/signin.tsx
-'use client'  // This is a comment
 
+'use client';
 import React, { useState } from 'react';
 
 const SignIn = () => {
@@ -16,12 +16,10 @@ const SignIn = () => {
 
     // Mock authentication logic (replace with real API call)
     if (email === 'user@example.com' && password === 'password') {
-      // Simulate successful sign-in
       setSuccess(true);
-      // Redirect or perform further actions here
       console.log('Sign in successful');
+      // Redirect or perform further actions here
     } else {
-      // Simulate failed sign-in
       setError('Invalid email or password');
     }
   };
@@ -64,6 +62,7 @@ const SignIn = () => {
       <p className="text-center text-gray-600">
         Don't have an account? <a href="/signup" className="text-blue-500 hover:text-blue-700">Sign Up</a>
       </p>
+
     </div>
   );
 };

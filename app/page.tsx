@@ -50,17 +50,27 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Additional Sections for Navigation */}
-      <section id="about" className="bg-white shadow-lg rounded-lg p-6 mt-4">
+      
+      {/* About Section */}
+      <section id="about" className="mt-10 bg-white shadow-md rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4">About Us</h2>
-        {/* Add about us details here */}
-        <p>Information about the company will go here.</p>
+        <p className="text-gray-700">
+          ResumDoc is a powerful tool designed to help you summarize and interact with your PDF documents effortlessly. Our mission is to provide users with an intuitive platform that simplifies document management and enhances productivity.
+        </p>
+        <p className="text-gray-700 mt-2">
+          Whether you're a student looking to summarize research papers or a professional managing important documents, ResumDoc offers the features you need to work smarter.
+        </p>
       </section>
 
-      <section id="contact" className="bg-white shadow-lg rounded-lg p-6 mt-4">
+      {/* Contact Section */}
+      <section id="contact" className="mt-6 bg-white shadow-md rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4">Contact Us</h2>
-        {/* Add contact information here */}
-        <p>Contact details will go here.</p>
+        <p className="text-gray-700 mb-2">We would love to hear from you! If you have any questions or feedback, please reach out:</p>
+        <ul className="list-disc list-inside text-gray-700">
+          <li>Email: support@resumdoc.com</li>
+          <li>Phone: (123) 456-7890</li>
+          <li>Address: 123 Document Lane, Suite 100, Cityville, ST 12345</li>
+        </ul>
       </section>
     </main>
   );
