@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Metadata } from "next";
 import PDFUploader from "@/components/pdf-uploader";
 import PDFViewer from "@/components/pdf-viewer";
@@ -15,12 +16,18 @@ export default function Home() {
       {/* Menu Bar */}
       <nav className="bg-white shadow-md rounded-lg mb-6">
         <div className="flex justify-between items-center p-4">
-          <div className="text-lg font-bold text-blue-600">ResumDoc</div>
+          <div className="text-lg font-bold text-blue-600">
+            <Link href="/">
+            ResumDoc
+            </Link>
+          </div>
           <div className="flex space-x-4">
-            <a href="#products" className="text-gray-700 hover:text-blue-600">Products</a>
-            <a href="#signin" className="text-gray-700 hover:text-blue-600">Sign In</a>
-            <a href="#about" className="text-gray-700 hover:text-blue-600">About Us</a>
-            <a href="#contact" className="text-gray-700 hover:text-blue-600">Contact</a>
+            <Link href="/products" className="text-gray-700 hover:text-blue-600">Products</Link>
+            <Link href="/login" className="text-gray-700 hover:text-blue-600">
+            Sign In
+            </Link>
+            <Link href="#about" className="text-gray-700 hover:text-blue-600">About Us</Link>
+            <Link href="#contact" className="text-gray-700 hover:text-blue-600">Contact</Link>
           </div>
         </div>
       </nav>
@@ -44,18 +51,6 @@ export default function Home() {
       </div>
 
       {/* Additional Sections for Navigation */}
-      <section id="products" className="bg-white shadow-lg rounded-lg p-6 mt-4">
-        <h2 className="text-xl font-semibold mb-4">Our Products</h2>
-        {/* Add product details here */}
-        <p>Details about products will go here.</p>
-      </section>
-
-      <section id="signin" className="bg-white shadow-lg rounded-lg p-6 mt-4">
-        <h2 className="text-xl font-semibold mb-4">Sign In</h2>
-        {/* Add sign-in form or link here */}
-        <p>Sign in form or link will go here.</p>
-      </section>
-
       <section id="about" className="bg-white shadow-lg rounded-lg p-6 mt-4">
         <h2 className="text-xl font-semibold mb-4">About Us</h2>
         {/* Add about us details here */}
