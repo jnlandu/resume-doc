@@ -7,6 +7,8 @@ import PDFViewer from "@/components/pdf-viewer";
 import Summary from "@/components/summary";
 import Chat from "@/components/chat";
 import { useEffect } from "react";
+import NavBar from '@/components/NavBar';
+import Hero from '@/components/Hero';
 
 // export const metadata: Metadata = {
 //   title: "Summarize and chat with your documents",
@@ -25,39 +27,10 @@ export default function Home() {
   return (
     <main className="container mx-auto p-6 bg-gray-50 min-h-screen">
       {/* Menu Bar */}
-      <nav className="bg-white shadow-md rounded-lg mb-6">
-        <div className="flex justify-between items-center p-4">
-          
-          <div className='flex items-center space-x-2 gap-10'>
-            <div className="text-lg font-bold text-blue-600">
-              <Link href="/">ResumDoc</Link>
-            </div>
-            <div className='flex items-center space-x-4'>
-              <Link href="/products" className="text-gray-700 hover:text-blue-600">Products</Link>
-              <Link href="/pricing" className="text-gray-700 hover:text-blue-600">Pricing</Link>
-            </div>
-          </div>
-          <div className="flex space-x-4">
-           
-            <Link href="/signin" className="text-gray-700 hover:text-blue-600">
-            <button className="bg-blue-600 text-white text-lg font-medium  px-2 rounded-lg shadow hover:bg-blue-700 transition"
-            
-            
-            >
-            Sign In
-            </button>
-            </Link>
-            {/* <Link href="#about" className="text-gray-700 hover:text-blue-600">About Us</Link> */}
-            <Link href="#contact" className="text-gray-700 hover:text-blue-600">Contact</Link>
-          </div>
-        </div>
-      </nav>
-
-      <h1 className="text-4xl font-bold text-center text-blue-600 mb-2">ResumDoc</h1>
-      <p className="text-center text-lg text-gray-700 mb-6">
-        Upload a PDF, get a summary, and chat with its content.
-      </p>
-
+      <NavBar/>
+      {/* Hero Section */}
+      <Hero/>
+      {/* Features Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div id="uploader" className="bg-white shadow-lg rounded-lg p-6 mb-4">
           <PDFUploader />
