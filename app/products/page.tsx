@@ -23,6 +23,7 @@ import {
   FileSearch, 
   Sparkles 
 } from 'lucide-react';
+import NavBar from '@/components/NavBar';
 
 const products = [
   {
@@ -66,47 +67,11 @@ const products = [
   }
 ];
 
-const Navbar = () => {
-  return (
-    <NavigationMenu>
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <Link href="/" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Home
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link href="/products" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Products
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link href="/pricing" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Pricing
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link href="/about" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              About
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
-  );
-};
 
 const Products = () => {
   return (
     <div className="container mx-auto px-4 py-8">
-      <Navbar />
+      <NavBar />
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold mb-4 text-gray-800">
           ResumDoc Product Suite

@@ -47,7 +47,7 @@ const Chat = () => {
   };
 
   return (
-    <Card className="h-[600px] flex flex-col">
+    <Card className="h-[800px] flex flex-col">
       <CardHeader>
         <CardTitle className="text-lg font-semibold">
           Chat with PDF - Parle avec le PDF
@@ -102,11 +102,6 @@ const Chat = () => {
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Thinking..." : "Send"}
           </Button>
-          {/* {messages.length > 0 && messages[messages.length - 1].role === "user" && (
-            <Button onClick={() => handleEditInput(messages[messages.length - 1])}>
-              Edit Last Input
-            </Button>
-          )} */}
         </form>
       </CardFooter>
     </Card>

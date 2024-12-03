@@ -7,9 +7,10 @@ import { StreamingTextResponse } from "ai"
 import { Groq} from "groq-sdk"
 // import * as parse from "pdf-parse"
 import { readFileSync } from "fs"
+import * as parse from "pdf-parse/lib/pdf-parse.js"
 
 
-const parse = require("pdf-parse")
+// const parse = require("pdf-parse")
 
 
 const  uploadPDF = async (formData: FormData)  => {

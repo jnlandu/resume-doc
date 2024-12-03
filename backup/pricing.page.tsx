@@ -16,7 +16,8 @@ import {
   MessageSquare, 
   FileSearch 
 } from 'lucide-react';
-import { Logo } from '@/components/Logo'; // Assuming you have a Logo component
+// import { Logo } from '@/components/Logo'; // Assuming you have a Logo component
+import NavBar from '@/components/NavBar';
 
 const products = [
   {
@@ -57,50 +58,10 @@ const products = [
   }
 ];
 
-const Navbar = () => {
-  return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background">
-      <div className="container flex h-16 items-center">
-        <div className="mr-4 hidden md:flex">
-          <Logo className="h-6 w-6" />
-          <span className="ml-2 font-bold">ResumDoc</span>
-        </div>
-        <NavigationMenu>
-          <NavigationMenuList>
-            {[
-              { href: '/', label: 'Home' },
-              { href: '/products', label: 'Products' },
-              { href: '/pricing', label: 'Pricing' },
-              { href: '/about', label: 'About' }
-            ].map((item) => (
-              <NavigationMenuItem key={item.href}>
-                <Link href={item.href} legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    {item.label}
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
-        <div className="ml-auto flex items-center space-x-4">
-          <Link href="/login">
-            <Button variant="ghost">Login</Button>
-          </Link>
-          <Link href="/signup">
-            <Button>Sign Up</Button>
-          </Link>
-        </div>
-      </div>
-    </header>
-  );
-};
-
 const Products = () => {
   return (
-    <div className="flex min-h-screen w-full flex-col">
-      <Navbar />
-      
+    <div className="flex min-h-screen flex-col">
+      <NavBar />
       <main className="container mx-auto flex-1 px-4 py-12">
         <section className="text-center mb-16">
           <h1 className="text-4xl font-bold mb-4 text-foreground">

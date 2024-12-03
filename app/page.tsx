@@ -32,7 +32,7 @@ export default function Home() {
       <Hero/>
       {/* Features Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div id="uploader" className="bg-white shadow-lg rounded-lg p-6 mb-4">
+        <div id="uploader" className="bg-white shadow-lg rounded-lg p-6">
           <PDFUploader />
           <PDFViewer />
         </div>

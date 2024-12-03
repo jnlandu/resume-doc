@@ -1,15 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle
-} from '@/components/ui/navigation-menu';
+
+import NavBar from '@/components/NavBar';
 
 const Pricing = () => {
   const plans = [
@@ -76,51 +69,9 @@ const Pricing = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
       {/* Navbar */}
-      <header className="sticky top-0 z-50 bg-white shadow-md">
-        <div className="container mx-auto flex items-center justify-between py-4 px-6">
-          <Link href="/" className="text-2xl font-bold text-blue-600">
-            ResumDoc
-          </Link>
-          
-          <NavigationMenu>
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <Link href="/features" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Features
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link href="/pricing" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Pricing
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link href="/about" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    About
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-          
-          <div className="flex items-center space-x-4">
-            <Link href="/login" className="text-gray-700 hover:text-blue-600 mr-4">
-              Log In
-            </Link>
-            <Button variant="default">
-              Get Started
-            </Button>
-          </div>
-        </div>
-      </header>
-
+        <NavBar/>
       {/* Rest of the pricing page content remains the same as in the previous artifact */}
       {/* Hero Section */}
       <div className="container mx-auto px-6 pt-16 text-center">

@@ -6,7 +6,8 @@ import { join } from "path"
 import { StreamingTextResponse } from "ai"
 import { createGroq } from "@ai-sdk/groq"
 import { Groq} from "groq-sdk"
-import *  as pdfParse  from 'pdf-parse' 
+// import *  as pdfParse  from 'pdf-parse' 
+import * as pdfParse from "pdf-parse/lib/pdf-parse.js"
 
 const  uploadPDF = async (formData: FormData)  => {
   const file = formData.get("pdf") as File
