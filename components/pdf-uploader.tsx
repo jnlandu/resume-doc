@@ -25,7 +25,6 @@ const PDFUploader = () => {
       formData.append("pdf", file)
 
       const result = await uploadPDF(formData)
-      
       // Assuming uploadPDF returns an object with file details
       setUploadedFile({
         name: file.name,
