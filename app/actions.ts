@@ -7,7 +7,7 @@ import { StreamingTextResponse } from "ai"
 import { Groq} from "groq-sdk"
 // import * as parse from "pdf-parse"
 import { readFileSync } from "fs"
-import * as parse from "pdf-parse/lib/pdf-parse.js"
+import * as parse from "pdf-parse"
 
 
 // const parse = require("pdf-parse")
@@ -46,11 +46,10 @@ export async function summarizePDF() {
   const pdfPath = join(uploadsDir, latestPDF)
   const pdfBuffer =  readFileSync(pdfPath)
   const pdf = await parse(pdfBuffer)
+  console.log("Debugging pdf:", pdf)
   const pdfContent = pdf.text 
+  console.log("Debugging pdfContent:", pdfContent)
 
-  // console.log("Debugging latestPDF", pdfContent)
-
-  // console.log("Debugging pdfContent", pdfContent)
 
   const response = await groq.chat.completions.create({
     model: "mixtral-8x7b-32768",
