@@ -7,7 +7,8 @@ import { StreamingTextResponse } from "ai"
 import { Groq} from "groq-sdk"
 // import * as parse from "pdf-parse"
 import { readFileSync } from "fs"
-import * as parse from "pdf-parse"
+// import * as pdfParse from "pdf-parse"
+import PdfParse from "pdf-parse"
 
 
 // const parse = require("pdf-parse")
@@ -45,7 +46,7 @@ export async function summarizePDF() {
   const latestPDF = pdfFiles[pdfFiles.length - 1]
   const pdfPath = join(uploadsDir, latestPDF)
   const pdfBuffer =  readFileSync(pdfPath)
-  const pdf = await parse(pdfBuffer)
+  const pdf = await PdfParse(pdfBuffer)
   console.log("Debugging pdf:", pdf)
   const pdfContent = pdf.text 
   console.log("Debugging pdfContent:", pdfContent)
@@ -101,14 +102,14 @@ export async function chatWithPDF(messages: { role: string; content: string }[])
   const latestPDF = pdfFiles[pdfFiles.length - 1]
   const pdfPath = join(uploadsDir, latestPDF)
   const pdfBuffer =  readFileSync(pdfPath)
-  const pdf = await parse(pdfBuffer)
+  const pdf = await PdfParse(pdfBuffer)
   const pdfContent = pdf.text 
 
   const response = await groq.chat.completions.create({
     model: "mixtral-8x7b-32768",
     messages: [
       { role: "system", content: `You are a helpful assistant that answers questions based on the following PDF content:\n\n${pdfContent}
-      Answer the questions based on the content of the PDF.
+      Answer the questions based on the content of the PDF. Always complete your answers with a  space than a full stop.
       If you need more context, ask for it.
       Don't provide answers that are not based on the content of the PDF.
       Only answer in the language the user is asking the questoion in.
