@@ -14,7 +14,7 @@ const Summary = () => {
   const handleSummarize = async () => {
     setLoading(true);
     try {
-      const result = await summarizePDF(); // Pass word count to the function
+      const result = await summarizePDF(); // DO this later: Pass word count to the function
       setSummary(result!.summary);
     } catch (error) {
       console.error("Failed to generate summary:", error);
