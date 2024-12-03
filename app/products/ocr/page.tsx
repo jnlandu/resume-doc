@@ -234,8 +234,8 @@ export default function OCR() {
             </button>
 
             {extractedText && (
-              <div className="mt-6 p-4 bg-gray-100 rounded-lg">
-                <h3 className="text-lg font-semibold mb-2">Extracted Text</h3>
+              <div className="mt-6 p-4 bg-gray-100 rounded-lg max-h-[400px] overflow-y-auto">
+                <h3 className="text-lg font-semibold mb-2 sticky top-0 bg-gray-100">Extracted Text</h3>
                 <pre className="whitespace-pre-wrap break-words">{extractedText}</pre>
               </div>
             )}
