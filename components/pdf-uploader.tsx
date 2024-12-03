@@ -29,7 +29,7 @@ const PDFUploader = () => {
       // Assuming uploadPDF returns an object with file details
       setUploadedFile({
         name: file.name,
-        url: result?.fileUrl || '' // Adjust based on your actual return type
+        url: result?.path || '' // Adjust based on your actual return type
       })
     } catch (err) {
       setError("Failed to upload PDF. Please try again.")
