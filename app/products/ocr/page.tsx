@@ -1,11 +1,11 @@
 'use client';
 
 import NavBar from '@/components/NavBar';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Document, Page, pdfjs } from "react-pdf";
 import Tesseract from 'tesseract.js';
 import { getDocument } from 'pdfjs-dist/build/pdf';
-import { Loader2 } from 'lucide-react'; // Assuming lucide-react is available for spinner
+import { Loader2, ChevronLeft, ChevronRight, UploadCloud } from 'lucide-react';
 
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
@@ -19,6 +19,9 @@ export default function OCR() {
   const [isLoading, setIsLoading] = useState(false);
   const [previewZoom, setPreviewZoom] = useState(1);
   const fileInputRef = useRef(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [pdfPages, setPdfPages] = useState([]);
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -33,10 +36,40 @@ export default function OCR() {
       handleFileSelect(files[0]);
     }
   };
+ 
 
-  const handleFileSelect = (file) => {
+  const handleFileSelect = async (file: any) => {
     setSelectedFile(file);
-    setPreviewZoom(1); // Reset zoom when new file is selected
+    setPreviewZoom(1);
+    setCurrentPage(1);
+
+    if (file.type === 'application/pdf') {
+      try {
+        const pdfData = await file.arrayBuffer();
+        const pdfDoc = await getDocument({ data: pdfData }).promise;
+        const numPages = pdfDoc.numPages;
+        setTotalPages(numPages);
+
+        const pageImages = [];
+        for (let i = 1; i <= numPages; i++) {
+          const page = await pdfDoc.getPage(i);
+          const viewport = page.getViewport({ scale: 2 });
+          const canvas = document.createElement('canvas');
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          const context = canvas.getContext('2d');
+
+          await page.render({ canvasContext: context, viewport }).promise;
+          pageImages.push(canvas.toDataURL());
+        }
+        setPdfPages(pageImages);
+      } catch (error) {
+        console.error('Error processing PDF:', error);
+      }
+    } else {
+      setTotalPages(1);
+      setPdfPages([]);
+    }
   };
 
   const handleFileInputChange = (e) => {
@@ -44,7 +77,7 @@ export default function OCR() {
     handleFileSelect(file);
   };
 
-  const pdfToImage = async (file) => {
+  const pdfToImage = async (file: any) => {
     const pdfData = await file.arrayBuffer();
     const pdfDoc = await getDocument({ data: pdfData }).promise;
     const numPages = pdfDoc.numPages;
@@ -117,6 +150,18 @@ export default function OCR() {
     setPreviewZoom(prev => Math.max(prev - 0.2, 0.4));
   };
 
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(prev => prev + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
+  };
+
   return (
     <main className="container mx-auto p-6 bg-gray-50 min-h-screen">
       <NavBar/>
@@ -136,7 +181,10 @@ export default function OCR() {
               onDragOver={handleDragOver}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current.click()}
-              className="border-2 border-dashed border-blue-300 rounded-lg p-10 text-center cursor-pointer hover:bg-blue-50 transition"
+              className="border-2 border-dashed border-blue-400 rounded-xl p-10 text-center cursor-pointer 
+                         hover:bg-blue-50 transition duration-300 ease-in-out 
+                         flex flex-col items-center justify-center 
+                         group"
             >
               <input 
                 type="file" 
@@ -145,7 +193,11 @@ export default function OCR() {
                 accept="image/*,.pdf"
                 className="hidden"
               />
-              <p className="text-gray-500">
+              <UploadCloud 
+                className="text-blue-400 group-hover:text-blue-600 
+                           w-16 h-16 mb-4 transition duration-300"
+              />
+              <p className="text-gray-600 font-medium group-hover:text-blue-700 transition duration-300">
                 Drag and drop files here or click to upload
               </p>
               <p className="text-sm text-gray-400 mt-2">Supported formats: JPG, PNG, PDF</p>
@@ -156,14 +208,14 @@ export default function OCR() {
               <div className="flex justify-center mt-4 space-x-4">
                 <button 
                   onClick={handleZoomOut} 
-                  className="bg-blue-100 text-blue-600 px-3 py-1 rounded"
+                  className="bg-blue-100 text-blue-600 px-3 py-1 rounded hover:bg-blue-200 transition"
                 >
                   -
                 </button>
                 <span className="self-center">Zoom: {Math.round(previewZoom * 100)}%</span>
                 <button 
                   onClick={handleZoomIn} 
-                  className="bg-blue-100 text-blue-600 px-3 py-1 rounded"
+                  className="bg-blue-100 text-blue-600 px-3 py-1 rounded hover:bg-blue-200 transition"
                 >
                   +
                 </button>
@@ -181,25 +233,53 @@ export default function OCR() {
               </div>
             )}
 
-            {/* File Preview with Zoom */}
-            {selectedFile && selectedFile.type.startsWith('image/') && (
-              <img 
-                src={URL.createObjectURL(selectedFile)} 
-                alt="Preview" 
-                style={{ transform: `scale(${previewZoom})`, transition: 'transform 0.3s' }}
-                className="mt-4 rounded-lg max-w-full h-auto origin-top-left"
-              />
-            )}
-            {selectedFile && selectedFile.type === 'application/pdf' && (
-              <iframe 
-                src={URL.createObjectURL(selectedFile)} 
-                title="PDF Preview" 
-                style={{ transform: `scale(${previewZoom})`, transition: 'transform 0.3s' }}
-                className="mt-4 w-full h-64 border rounded-lg origin-top-left"
-              />
+            {/* File Preview with Zoom and Pagination */}
+            {selectedFile && (
+              <div className="mt-4 relative">
+                {selectedFile.type.startsWith('image/') && (
+                  <img 
+                    src={URL.createObjectURL(selectedFile)} 
+                    alt="Preview" 
+                    style={{ transform: `scale(${previewZoom})`, transition: 'transform 0.3s' }}
+                    className="rounded-lg max-w-full h-auto origin-top-left"
+                  />
+                )}
+
+                {selectedFile.type === 'application/pdf' && pdfPages.length > 0 && (
+                  <div>
+                    <img 
+                      src={pdfPages[currentPage - 1]} 
+                      alt={`PDF Page ${currentPage}`}
+                      style={{ transform: `scale(${previewZoom})`, transition: 'transform 0.3s' }}
+                      className="rounded-lg max-w-full h-auto origin-top-left"
+                    />
+                    
+                    {/* Pagination Controls */}
+                    <div className="flex justify-center items-center mt-4 space-x-4">
+                      <button 
+                        onClick={handlePreviousPage} 
+                        disabled={currentPage === 1}
+                        className="bg-blue-100 text-blue-600 p-2 rounded hover:bg-blue-200 transition disabled:opacity-50"
+                      >
+                        <ChevronLeft />
+                      </button>
+                      <span>Page {currentPage} of {totalPages}</span>
+                      <button 
+                        onClick={handleNextPage} 
+                        disabled={currentPage === totalPages}
+                        className="bg-blue-100 text-blue-600 p-2 rounded hover:bg-blue-200 transition disabled:opacity-50"
+                      >
+                        <ChevronRight />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
+          {/* Right Side - Text Extraction Options (remains the same) */}
+          {/* ... */}
           {/* Right Side - Text Extraction Options */}
           <div className="bg-white shadow-md rounded-lg p-6">
             <h2 className="text-2xl font-bold text-blue-600 mb-4">Text Extraction</h2>
