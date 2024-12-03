@@ -2,7 +2,11 @@
 
 import NavBar from '@/components/NavBar';
 import React, { useState, useRef } from 'react';
-import { Document, Page, pdfjs } from 'react-pdf';
+import { Document, Page, pdfjs } from "react-pdf";
+import Tesseract from 'tesseract.js';
+import { getDocument } from 'pdfjs-dist/build/pdf';
+import { Loader2 } from 'lucide-react'; // Assuming lucide-react is available for spinner
+
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
@@ -10,19 +14,18 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 
 export default function OCR() {
   const [selectedFile, setSelectedFile] = useState(null);
-  const [numPages, setNumPages] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
   const [extractedText, setExtractedText] = useState('');
   const [formatOptions, setFormatOptions] = useState('Plain Text');
-  const [scale, setScale] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [previewZoom, setPreviewZoom] = useState(1);
   const fileInputRef = useRef(null);
 
-  const handleDragOver = (e: any) => {
+  const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
-  const handleDrop = (e: any) => {
+  const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
     const files = e.dataTransfer.files;
@@ -31,88 +34,110 @@ export default function OCR() {
     }
   };
 
-  const handleFileSelect = (file: any) => {
+  const handleFileSelect = (file) => {
     setSelectedFile(file);
-    setPageNumber(1);
-    setScale(1);
+    setPreviewZoom(1); // Reset zoom when new file is selected
   };
 
-  const handleFileInputChange = (e: any) => {
+  const handleFileInputChange = (e) => {
     const file = e.target.files[0];
     handleFileSelect(file);
   };
 
-  const onDocumentLoadSuccess = ({ numPages }: any) => {
-    setNumPages(numPages);
+  const pdfToImage = async (file) => {
+    const pdfData = await file.arrayBuffer();
+    const pdfDoc = await getDocument({ data: pdfData }).promise;
+    const numPages = pdfDoc.numPages;
+    const images = [];
+
+    for (let i = 1; i <= numPages; i++) {
+      const page = await pdfDoc.getPage(i);
+      const viewport = page.getViewport({ scale: 2 });
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const context = canvas.getContext('2d');
+
+      await page.render({ canvasContext: context, viewport }).promise;
+      images.push(canvas.toDataURL());
+    }
+
+    return images;
   };
 
-  const changePage = (offset: any) => {
-    setPageNumber(prevPageNumber => prevPageNumber + offset);
-  };
-
-  const handleZoom = (zoomType: any) => {
-    setScale(prevScale => 
-      zoomType === 'in' ? Math.min(prevScale * 1.25, 3) : 
-      Math.max(prevScale / 1.25, 0.5)
-    );
-  };
-
-  const handleExtractText = (e: any) => {
-    e.preventDefault();
+  const handleExtractText = async () => {
     if (selectedFile) {
-      setExtractedText(`Extracted text from ${selectedFile.name}. (Simulated OCR result in ${formatOptions})`);
+      setIsLoading(true);
+      try {
+        if (selectedFile.type === 'application/pdf') {
+          const images = await pdfToImage(selectedFile);
+          let fullText = '';
+
+          for (const img of images) {
+            const { data: { text } } = await Tesseract.recognize(img, 'eng', {
+              logger: info => console.log(info),
+            });
+            fullText += text + '\n';
+          }
+
+          setExtractedText(fullText);
+        } else {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            Tesseract.recognize(
+              reader.result,
+              'eng',
+              {
+                logger: info => console.log(info),
+              }
+            ).then(({ data: { text } }) => {
+              setExtractedText(text);
+              setIsLoading(false);
+            }).catch(err => {
+              console.error(err);
+              setExtractedText('Error extracting text');
+              setIsLoading(false);
+            });
+          };
+          reader.readAsDataURL(selectedFile);
+        }
+      } catch (error) {
+        console.error(error);
+        setExtractedText('Error extracting text');
+        setIsLoading(false);
+      }
     }
   };
 
-  const handleUploadClick = (e: any) => {
-    e.preventDefault();
-    fileInputRef.current.click();
+  const handleZoomIn = () => {
+    setPreviewZoom(prev => Math.min(prev + 0.2, 2));
   };
 
-  const handlePageChange = (type: any) => (e: any) => {
-    e.preventDefault();
-    if (type === 'prev' && pageNumber > 1) {
-      changePage(-1);
-    } else if (type === 'next' && pageNumber < numPages!) {
-      changePage(1);
-    }
+  const handleZoomOut = () => {
+    setPreviewZoom(prev => Math.max(prev - 0.2, 0.4));
   };
 
   return (
-    <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
+    <main className="container mx-auto p-6 bg-gray-50 min-h-screen">
       <NavBar/>
       
       {/* Hero Section */}
-      <div className="bg-blue-600 text-white py-16 text-center">
-        <h1 className="text-4xl font-bold mb-4">PDF OCR & Viewer</h1>
-        <p className="text-xl mb-6">
-          Convert images and scanned PDFs to text, Markdown, JSON, or XML.
-        </p>
+      <div className="bg-blue-600 text-white py-12 text-center mb-6">
+        <h1 className="text-4xl font-bold mb-4">OCR Document Extractor</h1>
+        <p className="text-xl">Upload images or PDFs and extract text instantly</p>
       </div>
 
-      <div className="container mx-auto p-6">
-        <div className="flex flex-col md:flex-row gap-6">
+      <div className="container mx-auto mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Left Side - File Upload/Drop Zone */}
-          <div className="w-full md:w-1/2 bg-white shadow-md rounded-lg p-6">
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <h2 className="text-2xl font-bold text-blue-600 mb-4">Upload Document</h2>
             <div 
               onDragOver={handleDragOver}
               onDrop={handleDrop}
-              onClick={handleUploadClick}
+              onClick={() => fileInputRef.current.click()}
               className="border-2 border-dashed border-blue-300 rounded-lg p-10 text-center cursor-pointer hover:bg-blue-50 transition"
             >
-              <p className="text-gray-500">
-                Drag and drop file here or click to upload
-              </p>
-            </div>
-
-            {/* Upload Button */}
-            <div className="flex justify-center mt-4">
-              <button 
-                onClick={handleUploadClick}
-                className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition"
-              >
-                Upload Document
-              </button>
               <input 
                 type="file" 
                 ref={fileInputRef}
@@ -120,88 +145,64 @@ export default function OCR() {
                 accept="image/*,.pdf"
                 className="hidden"
               />
+              <p className="text-gray-500">
+                Drag and drop files here or click to upload
+              </p>
+              <p className="text-sm text-gray-400 mt-2">Supported formats: JPG, PNG, PDF</p>
             </div>
-            
+
+            {/* Zoom Controls */}
+            {selectedFile && (
+              <div className="flex justify-center mt-4 space-x-4">
+                <button 
+                  onClick={handleZoomOut} 
+                  className="bg-blue-100 text-blue-600 px-3 py-1 rounded"
+                >
+                  -
+                </button>
+                <span className="self-center">Zoom: {Math.round(previewZoom * 100)}%</span>
+                <button 
+                  onClick={handleZoomIn} 
+                  className="bg-blue-100 text-blue-600 px-3 py-1 rounded"
+                >
+                  +
+                </button>
+              </div>
+            )}
 
             {/* Uploaded File Display */}
             {selectedFile && (
-              <div className="mt-4">
-                <div className="p-4 bg-gray-100 rounded-lg flex items-center mb-4">
-                  <span className="mr-4">📄</span>
-                  <div>
-                    <p className="font-medium">{selectedFile.name}</p>
-                    <p className="text-sm text-gray-500">{(selectedFile.size / 1024).toFixed(2)} KB</p>
-                  </div>
+              <div className="mt-4 p-4 bg-gray-100 rounded-lg flex items-center">
+                <span className="mr-4">📄</span>
+                <div>
+                  <p className="font-medium">{selectedFile.name}</p>
+                  <p className="text-sm text-gray-500">{(selectedFile.size / 1024).toFixed(2)} KB</p>
                 </div>
-
-                {/* PDF Viewer */}
-                {selectedFile.type === 'application/pdf' && (
-                  <div className="bg-gray-100 rounded-lg p-4">
-                    {/* Zoom Controls */}
-                    <div className="flex justify-center mb-4 space-x-4">
-                      <button 
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleZoom('out');
-                        }}
-                        className="px-4 py-2 bg-blue-500 text-white rounded"
-                      >
-                        -
-                      </button>
-                      <span className="self-center">Zoom: {Math.round(scale * 100)}%</span>
-                      <button 
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleZoom('in');
-                        }}
-                        className="px-4 py-2 bg-blue-500 text-white rounded"
-                      >
-                        +
-                      </button>
-                    </div>
-
-                    <Document
-                      file={URL.createObjectURL(selectedFile)}
-                      onLoadSuccess={onDocumentLoadSuccess}
-                      className="flex justify-center"
-                    >
-                      <Page 
-                        pageNumber={pageNumber} 
-                        scale={scale}
-                        renderTextLayer={false}
-                        renderAnnotationLayer={false}
-                      />
-                    </Document>
-                    
-                    {/* Pagination */}
-                    {numPages > 1 && (
-                      <div className="flex justify-center items-center mt-4 space-x-4">
-                        <button 
-                          onClick={handlePageChange('prev')}
-                          disabled={pageNumber <= 1}
-                          className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
-                        >
-                          Previous
-                        </button>
-                        <span>Page {pageNumber} of {numPages}</span>
-                        <button 
-                          onClick={handlePageChange('next')}
-                          disabled={pageNumber >= numPages}
-                          className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
-                        >
-                          Next
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
+            )}
+
+            {/* File Preview with Zoom */}
+            {selectedFile && selectedFile.type.startsWith('image/') && (
+              <img 
+                src={URL.createObjectURL(selectedFile)} 
+                alt="Preview" 
+                style={{ transform: `scale(${previewZoom})`, transition: 'transform 0.3s' }}
+                className="mt-4 rounded-lg max-w-full h-auto origin-top-left"
+              />
+            )}
+            {selectedFile && selectedFile.type === 'application/pdf' && (
+              <iframe 
+                src={URL.createObjectURL(selectedFile)} 
+                title="PDF Preview" 
+                style={{ transform: `scale(${previewZoom})`, transition: 'transform 0.3s' }}
+                className="mt-4 w-full h-64 border rounded-lg origin-top-left"
+              />
             )}
           </div>
 
           {/* Right Side - Text Extraction Options */}
-          <div className="w-full md:w-1/2 bg-white shadow-md rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-blue-600 mb-4">Extract Text</h2>
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <h2 className="text-2xl font-bold text-blue-600 mb-4">Text Extraction</h2>
             
             <div className="mb-4">
               <label className="block text-gray-700 mb-2">Output Format</label>
@@ -219,10 +220,17 @@ export default function OCR() {
             
             <button 
               onClick={handleExtractText}
-              disabled={!selectedFile}
-              className="w-full bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+              disabled={!selectedFile || isLoading}
+              className="w-full bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 flex items-center justify-center"
             >
-              Extract Text
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 animate-spin" />
+                  Extracting...
+                </>
+              ) : (
+                'Extract Text'
+              )}
             </button>
 
             {extractedText && (
@@ -234,6 +242,6 @@ export default function OCR() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
