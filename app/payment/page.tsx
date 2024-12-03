@@ -34,7 +34,7 @@ const Payment = () => {
   const [error, setError] = useState("");
 
   // Payment method detection and processing
-  const detectCardType = (number) => {
+  const detectCardType = (number: any) => {
     const visa = /^4/;
     const mastercard = /^5[1-5]/;
     const amex = /^3[47]/;
@@ -45,14 +45,14 @@ const Payment = () => {
     return "";
   };
 
-  const handleCardNumberChange = (e) => {
+  const handleCardNumberChange = (e: any) => {
     const value = e.target.value.replace(/\D/g, '');
     const formattedValue = value.replace(/(\d{4})(?=\d)/g, '$1 ');
     setCardNumber(formattedValue);
     setCardType(detectCardType(value));
   };
 
-  const handleExpirationChange = (e) => {
+  const handleExpirationChange = (e: any) => {
     let value = e.target.value.replace(/\D/g, '');
     if (value.length > 2) {
       value = value.slice(0, 2) + '/' + value.slice(2, 4);
@@ -60,7 +60,7 @@ const Payment = () => {
     setExpirationDate(value);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -93,7 +93,7 @@ const Payment = () => {
       setCardType("");
       setMobileNumber("");
       setMobileProvider("");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Payment failed:", error);
       setError(error.message || "Payment processing failed. Please try again.");
     } finally {

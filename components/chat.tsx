@@ -35,7 +35,7 @@ const Chat = () => {
       setIsSpeaking(false);
       setUtterance(null);
     } else {
-      const newUtterance = new SpeechSynthesisUtterance(content);
+      const newUtterance: any = new SpeechSynthesisUtterance(content);
       newUtterance.onend = () => {
         setIsSpeaking(false);
         setUtterance(null);

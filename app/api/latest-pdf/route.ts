@@ -7,12 +7,18 @@ export async function GET() {
   const pdfFiles = files.filter((file) => file.endsWith(".pdf"))
 
   if (pdfFiles.length === 0) {
-    return Response.json({ path: null })
+    return new Response(JSON.stringify({ path: null }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const latestPDF = pdfFiles[pdfFiles.length - 1]
   const pdfPath = `/uploads/${latestPDF}`
 
-  return Response.json({ path: pdfPath })
+  return new Response(JSON.stringify({ path: pdfPath }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
 }
 

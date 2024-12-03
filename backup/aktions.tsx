@@ -7,7 +7,7 @@ import { StreamingTextResponse } from "ai"
 import { createGroq } from "@ai-sdk/groq"
 import { Groq} from "groq-sdk"
 // import *  as pdfParse  from 'pdf-parse' 
-import * as pdfParse from "pdf-parse/lib/pdf-parse.js"
+import  PdfParse from "pdf-parse"
 
 const  uploadPDF = async (formData: FormData)  => {
   const file = formData.get("pdf") as File
@@ -38,7 +38,7 @@ export async function summarizePDF() {
   const pdfPath = join(uploadsDir, latestPDF)
   const pdfBuffer = readFileSync(pdfPath)
   // const pdfContent = await readFile(pdfPath, "utf-8")
-  const pdf = await pdfParse(pdfBuffer)
+  const pdf = await PdfParse(pdfBuffer)
   const pdfContent = pdf.text
 
   // console.log("Debugging pdfContent text", pdf.info)
