@@ -51,7 +51,7 @@ const Summary = () => {
         <CardTitle className="text-2xl font-bold text-blue-800 flex items-center justify-between">
           PDF Summary
           {summary && (
-            <span className="text-sm text-blue-600 font-normal">
+            <span className="max-md:hidden text-sm text-blue-600 font-normal">
               {new Date().toLocaleDateString()}
             </span>
           )}
@@ -108,7 +108,7 @@ const Summary = () => {
             </div>
 
             {/* Download Button */}
-            <div className="relative group">
+            <div className="max-md:hidden relative group">
               <Button onClick={handleDownload} className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-2 py-1 rounded-md">
                 <Download className="mr-1 h-4 w-4" /> 
               </Button>
@@ -116,14 +116,14 @@ const Summary = () => {
             </div>
 
             {/* Feedback Buttons */}
-            <div className="relative group">
+            <div className="max-md:hidden relative group">
               <Button className="bg-yellow-500 hover:bg-yellow-600 text-white text-sm px-2 py-1 rounded-md">
                 <ThumbsUp className="mr-1 h-4 w-4" /> 
               </Button>
               <span className="absolute left-[50%] transform -translate-x-[50%] bottom-full mb-1 hidden group-hover:block bg-gray-800 text-white text-xs rounded px-2 py-1">Like</span>
             </div>
 
-            <div className="relative group">
+            <div className="max-md:hidden relative group">
               <Button className="bg-red-500 hover:bg-red-600 text-white text-sm px-2 py-1 rounded-md">
                 <ThumbsDown className="mr-1 h-4 w-4" /> 
               </Button>

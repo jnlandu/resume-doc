@@ -72,20 +72,28 @@ export default function Home() {
             {
               name: "Yves Kabongo",
               username: "@yveskabongo",
-              feedback: "En tant qu'étudiant, ResumDoc a été un sauveur ! C'est comme avoir un assistant personnel pour résumer tous mes documents d'étude.",              imageUrl: "https://via.placeholder.com/150/000000/FFFFFF/?text=JS", // Placeholder for black-and-white image
+              feedback: "En tant qu'étudiant, ResumDoc a été un sauveur ! C'est comme avoir un assistant personnel pour résumer tous mes documents d'étude.",             
+               imageUrl: "https://via.placeholder.com/150/000000/FFFFFF/?text=YK", // Placeholder for black-and-white image
             },
             {
-              name: "Michael Lee",
-              username: "@mikelee",
-              feedback: "The chat feature is a game-changer. I can interact with my PDFs and get summaries instantly. ResumDoc is worth every penny!",
-              imageUrl: "https://via.placeholder.com/150/000000/FFFFFF/?text=ML", // Placeholder for black-and-white image
+              name: "Francis Mayala",
+              username: "@fmayala",
+              feedback: "La fonctionnalité de chat est révolutionnaire. Je peux interagir avec mes PDF et obtenir des résumés instantanément. ResumDoc vaut chaque centime !",
+              imageUrl: "https://via.placeholder.com/150/000000/FFFFFF/?text=FM", // Placeholder for black-and-white image
             },
           ].map((user) => (
-            <div key={user.username} className="bg-gray-100 shadow-lg rounded-lg p-6 flex items-start transition-transform transform hover:-translate-y-[2px] duration-200 ease-in-out">
-              <img src={user.imageUrl} alt={`${user.name}'s Avatar`} className="w-[60px] h-[60px] rounded-full border border-gray-300 mr-4" />
-              <div>
-                <p className="text-gray-800 font-semibold">{user.name}</p>
-                <p className="text-sm text-gray-500">{user.username}</p>
+            <div key={user.username} className="max-md:flex-col bg-gray-100 shadow-lg rounded-lg p-6 flex items-start transition-transform transform hover:-translate-y-[2px] duration-200 ease-in-out">
+              <div className="sm:hidden flex items-center mb-4">
+                <img src={user.imageUrl} alt={`${user.name}'s Avatar`} className="w-16 h-16 rounded-full border border-gray-300 mr-4" />
+                <div>
+                  <p className="text-gray-800 font-semibold">{user.name}</p>
+                  <p className="text-sm text-gray-500">{user.username}</p>
+                </div>
+              </div>
+              <img src={user.imageUrl} alt={`${user.name}'s Avatar`} className="max-sm:hidden w-[60px] h-[60px] rounded-full border border-gray-300 mr-4" />
+              <div className=''>
+                <p className="max-sm:hidden text-gray-800 font-semibold">{user.name}</p>
+                <p className="max-sm:hidden text-sm text-gray-500">{user.username}</p>
                 <p className="text-gray-700 leading-relaxed mt-2">{user.feedback}</p>
               </div>
             </div>
@@ -106,11 +114,11 @@ export default function Home() {
           </li>
           <li>
             <strong className="text-gray900">Phone:</strong>{' '}
-            <span>(123) 456 - 7890</span>
+            <span>(+221) 77 200 38 35 </span>
           </li>
           <li>
             <strong className="text-gray900">Address:</strong>{' '}
-            <span>123 Document Lane, Suite 100, Cityville, ST 12345</span>
+            <span> Mbour, Senegal</span>
           </li>
         </ul>
         <div className="mt8">

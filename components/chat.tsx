@@ -58,7 +58,7 @@ const Chat = () => {
           {messages.map((m) => (
             <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
               <div
-                className={`text-justify rounded-lg p-2 max-w-[80%] ${
+                className={`text-justify rounded-lg p-2 max-w-[auto] ${
                   m.role === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
                 }`}
               >
