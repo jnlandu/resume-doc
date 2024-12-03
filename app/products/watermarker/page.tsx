@@ -1,3 +1,4 @@
+import NavBar from '@/components/NavBar';
 import React, { useState } from 'react';
 
 export default function PDFWatermarker() {
@@ -5,7 +6,7 @@ export default function PDFWatermarker() {
   const [watermarkText, setWatermarkText] = useState('');
   const [watermarked, setWatermarked] = useState(false);
 
-  const handleFileChange = (e) => {
+  const handleFileChange = (e: any) => {
     const file = e.target.files[0];
     setSelectedFile(file);
   };

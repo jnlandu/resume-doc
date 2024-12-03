@@ -17,12 +17,12 @@ export default function OCR() {
   const [scale, setScale] = useState(1);
   const fileInputRef = useRef(null);
 
-  const handleDragOver = (e) => {
+  const handleDragOver = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
     const files = e.dataTransfer.files;
@@ -31,46 +31,63 @@ export default function OCR() {
     }
   };
 
-  const handleFileSelect = (file) => {
+  const handleFileSelect = (file: any) => {
     setSelectedFile(file);
     setPageNumber(1);
     setScale(1);
   };
 
-  const handleFileInputChange = (e) => {
+  const handleFileInputChange = (e: any) => {
     const file = e.target.files[0];
     handleFileSelect(file);
   };
 
-  const onDocumentLoadSuccess = ({ numPages }) => {
+  const onDocumentLoadSuccess = ({ numPages }: any) => {
     setNumPages(numPages);
   };
 
-  const changePage = (offset) => {
+  const changePage = (offset: any) => {
     setPageNumber(prevPageNumber => prevPageNumber + offset);
   };
 
-  const handleZoom = (zoomType) => {
+  const handleZoom = (zoomType: any) => {
     setScale(prevScale => 
       zoomType === 'in' ? Math.min(prevScale * 1.25, 3) : 
       Math.max(prevScale / 1.25, 0.5)
     );
   };
 
-  const handleExtractText = () => {
+  const handleExtractText = (e: any) => {
+    e.preventDefault();
     if (selectedFile) {
       setExtractedText(`Extracted text from ${selectedFile.name}. (Simulated OCR result in ${formatOptions})`);
     }
   };
 
+  const handleUploadClick = (e: any) => {
+    e.preventDefault();
+    fileInputRef.current.click();
+  };
+
+  const handlePageChange = (type: any) => (e: any) => {
+    e.preventDefault();
+    if (type === 'prev' && pageNumber > 1) {
+      changePage(-1);
+    } else if (type === 'next' && pageNumber < numPages!) {
+      changePage(1);
+    }
+  };
+
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
       <NavBar/>
       
       {/* Hero Section */}
       <div className="bg-blue-600 text-white py-16 text-center">
         <h1 className="text-4xl font-bold mb-4">PDF OCR & Viewer</h1>
-        <p className="text-xl mb-6">Upload, Preview, and Extract Text from Your Documents</p>
+        <p className="text-xl mb-6">
+          Convert images and scanned PDFs to text, Markdown, JSON, or XML.
+        </p>
       </div>
 
       <div className="container mx-auto p-6">
@@ -80,7 +97,7 @@ export default function OCR() {
             <div 
               onDragOver={handleDragOver}
               onDrop={handleDrop}
-              onClick={() => fileInputRef.current.click()}
+              onClick={handleUploadClick}
               className="border-2 border-dashed border-blue-300 rounded-lg p-10 text-center cursor-pointer hover:bg-blue-50 transition"
             >
               <p className="text-gray-500">
@@ -91,7 +108,7 @@ export default function OCR() {
             {/* Upload Button */}
             <div className="flex justify-center mt-4">
               <button 
-                onClick={() => fileInputRef.current.click()}
+                onClick={handleUploadClick}
                 className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition"
               >
                 Upload Document
@@ -104,6 +121,7 @@ export default function OCR() {
                 className="hidden"
               />
             </div>
+            
 
             {/* Uploaded File Display */}
             {selectedFile && (
@@ -122,14 +140,20 @@ export default function OCR() {
                     {/* Zoom Controls */}
                     <div className="flex justify-center mb-4 space-x-4">
                       <button 
-                        onClick={() => handleZoom('out')}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleZoom('out');
+                        }}
                         className="px-4 py-2 bg-blue-500 text-white rounded"
                       >
                         -
                       </button>
                       <span className="self-center">Zoom: {Math.round(scale * 100)}%</span>
                       <button 
-                        onClick={() => handleZoom('in')}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleZoom('in');
+                        }}
                         className="px-4 py-2 bg-blue-500 text-white rounded"
                       >
                         +
@@ -153,7 +177,7 @@ export default function OCR() {
                     {numPages > 1 && (
                       <div className="flex justify-center items-center mt-4 space-x-4">
                         <button 
-                          onClick={() => changePage(-1)} 
+                          onClick={handlePageChange('prev')}
                           disabled={pageNumber <= 1}
                           className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
                         >
@@ -161,7 +185,7 @@ export default function OCR() {
                         </button>
                         <span>Page {pageNumber} of {numPages}</span>
                         <button 
-                          onClick={() => changePage(1)} 
+                          onClick={handlePageChange('next')}
                           disabled={pageNumber >= numPages}
                           className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
                         >
