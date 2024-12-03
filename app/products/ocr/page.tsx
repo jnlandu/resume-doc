@@ -6,6 +6,7 @@ import { Document, Page, pdfjs } from "react-pdf";
 import Tesseract from 'tesseract.js';
 import { getDocument } from 'pdfjs-dist/build/pdf';
 import { Loader2, ChevronLeft, ChevronRight, UploadCloud } from 'lucide-react';
+import { marked } from 'marked';
 
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
@@ -15,13 +16,15 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 export default function OCR() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [extractedText, setExtractedText] = useState('');
-  const [formatOptions, setFormatOptions] = useState('Plain Text');
+  // const [formatOptions, setFormatOptions] = useState('Plain Text');
   const [isLoading, setIsLoading] = useState(false);
   const [previewZoom, setPreviewZoom] = useState(1);
   const fileInputRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [pdfPages, setPdfPages] = useState([]);
+  const [formatOptions, setFormatOptions] = useState('Markdown'); // Default to Markdown
+
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -161,6 +164,31 @@ export default function OCR() {
       setCurrentPage(prev => prev - 1);
     }
   };
+
+
+const formatExtractedText = (text: string) => {
+    switch(formatOptions) {
+      case 'Markdown':
+        // Convert text to markdown
+        return marked.parse(text);
+      case 'Plain Text':
+        // Return raw text
+        return text;
+      case 'JSON':
+        // Convert text to JSON
+        return JSON.stringify({ extractedText: text }, null, 2);
+      case 'XML':
+        // Convert text to XML
+        return `<?xml version="1.0" encoding="UTF-8"?>
+<extracted-text>${text}</extracted-text>`;
+      default:
+        return text;
+    }
+  };
+
+
+
+
 
   return (
     <main className="container mx-auto p-6 bg-gray-50 min-h-screen">
@@ -313,10 +341,27 @@ export default function OCR() {
               )}
             </button>
 
-            {extractedText && (
+            {/* {extractedText && (
               <div className="mt-6 p-4 bg-gray-100 rounded-lg max-h-[400px] overflow-y-auto">
                 <h3 className="text-lg font-semibold mb-2 sticky top-0 bg-gray-100">Extracted Text</h3>
                 <pre className="whitespace-pre-wrap break-words">{extractedText}</pre>
+              </div>
+            )} */}
+            {extractedText && (
+               <div className="mt-6 p-4 bg-gray-100 rounded-lg max-h-[400px] overflow-y-auto">
+                <h3 className="text-lg font-semibold mb-2">Extracted Text</h3>
+                {formatOptions === 'Markdown' ? (
+                  <div 
+                    className="prose max-w-full" 
+                    dangerouslySetInnerHTML={{ 
+                      __html: formatExtractedText(extractedText) 
+                    }} 
+                  />
+                ) : (
+                  <pre className="whitespace-pre-wrap break-words">
+                    {formatExtractedText(extractedText)}
+                  </pre>
+                )}
               </div>
             )}
           </div>
