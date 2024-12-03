@@ -2,11 +2,19 @@
 
 import NavBar from '@/components/NavBar';
 import React, { useState, useRef } from 'react';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/esm/Page/TextLayer.css';
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export default function OCR() {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [numPages, setNumPages] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
   const [extractedText, setExtractedText] = useState('');
   const [formatOptions, setFormatOptions] = useState('Plain Text');
+  const [scale, setScale] = useState(1);
   const fileInputRef = useRef(null);
 
   const handleDragOver = (e) => {
@@ -25,6 +33,8 @@ export default function OCR() {
 
   const handleFileSelect = (file) => {
     setSelectedFile(file);
+    setPageNumber(1);
+    setScale(1);
   };
 
   const handleFileInputChange = (e) => {
@@ -32,27 +42,60 @@ export default function OCR() {
     handleFileSelect(file);
   };
 
+  const onDocumentLoadSuccess = ({ numPages }) => {
+    setNumPages(numPages);
+  };
+
+  const changePage = (offset) => {
+    setPageNumber(prevPageNumber => prevPageNumber + offset);
+  };
+
+  const handleZoom = (zoomType) => {
+    setScale(prevScale => 
+      zoomType === 'in' ? Math.min(prevScale * 1.25, 3) : 
+      Math.max(prevScale / 1.25, 0.5)
+    );
+  };
+
   const handleExtractText = () => {
     if (selectedFile) {
-      // Placeholder text extraction
       setExtractedText(`Extracted text from ${selectedFile.name}. (Simulated OCR result in ${formatOptions})`);
     }
   };
 
   return (
-    <main className="container mx-auto p-6 bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen">
       <NavBar/>
-      <div className="container mx-auto mt-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      {/* Hero Section */}
+      <div className="bg-blue-600 text-white py-16 text-center">
+        <h1 className="text-4xl font-bold mb-4">PDF OCR & Viewer</h1>
+        <p className="text-xl mb-6">Upload, Preview, and Extract Text from Your Documents</p>
+      </div>
+
+      <div className="container mx-auto p-6">
+        <div className="flex flex-col md:flex-row gap-6">
           {/* Left Side - File Upload/Drop Zone */}
-          <div className="bg-white shadow-md rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-blue-600 mb-4">Upload Document</h2>
+          <div className="w-full md:w-1/2 bg-white shadow-md rounded-lg p-6">
             <div 
               onDragOver={handleDragOver}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current.click()}
               className="border-2 border-dashed border-blue-300 rounded-lg p-10 text-center cursor-pointer hover:bg-blue-50 transition"
             >
+              <p className="text-gray-500">
+                Drag and drop file here or click to upload
+              </p>
+            </div>
+
+            {/* Upload Button */}
+            <div className="flex justify-center mt-4">
+              <button 
+                onClick={() => fileInputRef.current.click()}
+                className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition"
+              >
+                Upload Document
+              </button>
               <input 
                 type="file" 
                 ref={fileInputRef}
@@ -60,26 +103,81 @@ export default function OCR() {
                 accept="image/*,.pdf"
                 className="hidden"
               />
-              <p className="text-gray-500">
-                Drag and drop file here or click to upload
-              </p>
             </div>
 
             {/* Uploaded File Display */}
             {selectedFile && (
-              <div className="mt-4 p-4 bg-gray-100 rounded-lg flex items-center">
-                <span className="mr-4">📄</span>
-                <div>
-                  <p className="font-medium">{selectedFile.name}</p>
-                  <p className="text-sm text-gray-500">{(selectedFile.size / 1024).toFixed(2)} KB</p>
+              <div className="mt-4">
+                <div className="p-4 bg-gray-100 rounded-lg flex items-center mb-4">
+                  <span className="mr-4">📄</span>
+                  <div>
+                    <p className="font-medium">{selectedFile.name}</p>
+                    <p className="text-sm text-gray-500">{(selectedFile.size / 1024).toFixed(2)} KB</p>
+                  </div>
                 </div>
+
+                {/* PDF Viewer */}
+                {selectedFile.type === 'application/pdf' && (
+                  <div className="bg-gray-100 rounded-lg p-4">
+                    {/* Zoom Controls */}
+                    <div className="flex justify-center mb-4 space-x-4">
+                      <button 
+                        onClick={() => handleZoom('out')}
+                        className="px-4 py-2 bg-blue-500 text-white rounded"
+                      >
+                        -
+                      </button>
+                      <span className="self-center">Zoom: {Math.round(scale * 100)}%</span>
+                      <button 
+                        onClick={() => handleZoom('in')}
+                        className="px-4 py-2 bg-blue-500 text-white rounded"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <Document
+                      file={URL.createObjectURL(selectedFile)}
+                      onLoadSuccess={onDocumentLoadSuccess}
+                      className="flex justify-center"
+                    >
+                      <Page 
+                        pageNumber={pageNumber} 
+                        scale={scale}
+                        renderTextLayer={false}
+                        renderAnnotationLayer={false}
+                      />
+                    </Document>
+                    
+                    {/* Pagination */}
+                    {numPages > 1 && (
+                      <div className="flex justify-center items-center mt-4 space-x-4">
+                        <button 
+                          onClick={() => changePage(-1)} 
+                          disabled={pageNumber <= 1}
+                          className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
+                        >
+                          Previous
+                        </button>
+                        <span>Page {pageNumber} of {numPages}</span>
+                        <button 
+                          onClick={() => changePage(1)} 
+                          disabled={pageNumber >= numPages}
+                          className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
 
           {/* Right Side - Text Extraction Options */}
-          <div className="bg-white shadow-md rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-blue-600 mb-4">Text Extraction</h2>
+          <div className="w-full md:w-1/2 bg-white shadow-md rounded-lg p-6">
+            <h2 className="text-2xl font-bold text-blue-600 mb-4">Extract Text</h2>
             
             <div className="mb-4">
               <label className="block text-gray-700 mb-2">Output Format</label>
@@ -112,6 +210,6 @@ export default function OCR() {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
