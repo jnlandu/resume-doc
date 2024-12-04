@@ -38,6 +38,8 @@ import {
 } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import NavBar from '@/components/NavBar';
+import Hero from '@/components/Hero';
 
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -168,15 +170,18 @@ const AdvancedWatermarker = () => {
   ];
 
   return (
+   <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
+    <NavBar/>
+    <Hero/>
     <div className="container mx-auto max-w-6xl p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* PDF Preview Section */}
-      <Card className="w-full">
-        <CardHeader>
+      <Card className="w-full bg-white shadow-lg border-0">
+        <CardHeader className="border-b bg-gray-50/50 rounded-t-lg">
           <CardTitle className="flex items-center">
-            <FileUp className="mr-2" /> PDF Preview
+          <FileUp className="mr-2 h-5 w-5 text-primary" /> PDF Preview
           </CardTitle>
         </CardHeader>
-        <CardContent className="relative">
+        <CardContent className="relative p-6">
           {pdfPath ? (
             <div className="relative">
               <Document 
@@ -187,7 +192,7 @@ const AdvancedWatermarker = () => {
                 <Page 
                   pageNumber={pageNumber} 
                   width={500}
-                  className="border shadow-lg rounded-lg overflow-hidden"
+                  className="border shadow-xl rounded-lg overflow-hidden bg-white"
                 />
                 {watermarkType === 'text' && watermarkText && (
                   <WatermarkPreview 
@@ -209,23 +214,25 @@ const AdvancedWatermarker = () => {
                 )}
               </Document>
               {/* Page Navigation */}
-              <div className="flex justify-between mt-4">
+              <div className="flex justify-between mt-6 items-center">
                 <Button 
                   variant="outline"
                   onClick={() => setPageNumber(Math.max(1, pageNumber - 1))}
                   disabled={pageNumber <= 1}
+                  className="hover:bg-gray-100 transition-colors"
                 >
-                  <ChevronLeft className="mr-2" /> Previous
+                  <ChevronLeft className="mr-2 h-4 w-4" />Previous
                 </Button>
-                <span className="self-center">
+                <span className="self-center font-medium text-gray-700">
                   Page {pageNumber} of {numPages}
                 </span>
                 <Button 
                   variant="outline"
                   onClick={() => setPageNumber(Math.min(numPages || 1, pageNumber + 1))}
                   disabled={pageNumber >= (numPages || 1)}
+                  className="hover:bg-gray-100 transition-colors"
                 >
-                  Next <ChevronRight className="ml-2" />
+                  Next <ChevronRight className="ml-2"/>
                 </Button>
               </div>
             </div>
@@ -356,7 +363,7 @@ const AdvancedWatermarker = () => {
             <Label>Opacity</Label>
             <Slider
               value={[watermarkOpacity]}
-              onValueChange={(value) => setWatermarkOpacity(value[0])}
+              onValueChange={(value: any) => setWatermarkOpacity(value[0])}
               max={100}
               step={1}
             />
@@ -366,14 +373,14 @@ const AdvancedWatermarker = () => {
           </div>
 
           {/* Position Selector */}
-          <div>
+          <div className='flex space-x-8'>
             <Label>Watermark Position</Label>
             <RadioGroup 
               value={watermarkPosition}
               onValueChange={(value: typeof watermarkPosition) => setWatermarkPosition(value)}
               className="grid grid-cols-3 gap-2"
             >
-              {positionOptions.map((option) => (
+              {positionOptions.map((option: any) => (
                 <div key={option.value} className="flex items-center space-x-2">
                   <RadioGroupItem value={option.value} id={option.value} />
                   <Label 
@@ -386,19 +393,22 @@ const AdvancedWatermarker = () => {
               ))}
             </RadioGroup>
           </div>
-
           {/* Action Buttons */}
-          <div className="flex space-x-4">
-            <Button className="flex-grow">
-              <Download className="mr-2" /> Download
+          <div className="flex space-x-4 pt-4 border-t">
+            <Button className="flex-grow bg-primary hover:bg-primary/90 text-white">
+              Apply
             </Button>
-            <Button variant="outline" className="flex-grow">
-              <Share2 className="mr-2" /> Share
+            <Button variant="outline" className="flex-grow hover:bg-gray-50">
+              <Download className="mr-2 h-4 w-4" /> Download
+            </Button>
+            <Button variant="outline" className="flex-grow hover:bg-gray-50">
+              <Share2 className="mr-2 h-4 w-4" /> Share
             </Button>
           </div>
         </CardContent>
       </Card>
     </div>
+</div>
   );
 };
 
