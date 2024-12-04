@@ -23,9 +23,9 @@ const  uploadPDF = async (formData: FormData)  => {
   return { success: true, path }
 }
 
-const GROQ_API_KEY = process.env.GROQ_API_KEY
+
 const groq =  new Groq({
-  apiKey: GROQ_API_KEY,
+  apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY,
 })
 
 export async function summarizePDF() {

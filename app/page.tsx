@@ -70,7 +70,7 @@ export default function Home() {
               imageUrl: "https://via.placeholder.com/150/000000/FFFFFF/?text=KM", // Placeholder for black-and-white image
             },
             {
-              name: "Heritier Kakumbi",
+              name: "Yves Kabongo",
               username: "@yveskabongo",
               feedback: "En tant qu'étudiant, ResumDoc a été un sauveur ! C'est comme avoir un assistant personnel pour résumer tous mes documents d'étude.",             
                imageUrl: "https://via.placeholder.com/150/000000/FFFFFF/?text=YK", // Placeholder for black-and-white image

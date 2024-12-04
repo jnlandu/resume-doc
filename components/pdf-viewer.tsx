@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -56,20 +55,20 @@ const PDFViewer = () => {
         />
       </Document>
       <div className="flex justify-between mt-4">
-      <button 
+        <button 
           onClick={() => setPageNumber(prev => Math.max(prev - 1, 1))} 
           disabled={pageNumber <= 1} 
-          className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center ${pageNumber <= 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${pageNumber <= 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          <ChevronLeft size={20} />
+          Previous
         </button>
         <span className="self-center text-gray-700">Page {pageNumber} of {numPages}</span>
         <button 
           onClick={() => setPageNumber(prev => Math.min(prev + 1, numPages!))} 
           disabled={pageNumber >= (numPages || 0)} 
-          className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center ${pageNumber >= (numPages || 0) ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${pageNumber >= (numPages || 0) ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          <ChevronRight size={20} />
+          Next
         </button>
       </div>
     </div>

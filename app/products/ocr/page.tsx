@@ -7,11 +7,19 @@ import Tesseract from 'tesseract.js';
 import { getDocument } from 'pdfjs-dist/build/pdf';
 import { Loader2, ChevronLeft, ChevronRight, UploadCloud } from 'lucide-react';
 import { marked } from 'marked';
+import { Groq } from 'groq-sdk';
+
+import { ocr } from 'llama-ocr'
 
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+
+
+
+
+
 
 export default function OCR() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -26,12 +34,13 @@ export default function OCR() {
   const [formatOptions, setFormatOptions] = useState('Markdown'); // Default to Markdown
 
 
-  const handleDragOver = (e) => {
+  //  Initialize Groq
+  const handleDragOver = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
     const files = e.dataTransfer.files;
@@ -75,7 +84,7 @@ export default function OCR() {
     }
   };
 
-  const handleFileInputChange = (e) => {
+  const handleFileInputChange = (e: any) => {
     const file = e.target.files[0];
     handleFileSelect(file);
   };
