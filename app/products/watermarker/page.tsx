@@ -24,6 +24,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
+import NavBar from '@/components/NavBar';
 
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -117,6 +118,8 @@ const PDFWatermarker = () => {
   };
 
   return (
+    <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
+      <NavBar/>
     <div className="container mx-auto p-6 grid grid-cols-2 gap-6">
       {/* Original File Preview */}
       <div className="bg-white shadow-lg rounded-lg p-4">
@@ -276,6 +279,7 @@ const PDFWatermarker = () => {
         </div>
       </div>
     </div>
+  </div>
   );
 };
 
