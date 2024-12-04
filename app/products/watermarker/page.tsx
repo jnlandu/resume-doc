@@ -1,197 +1,358 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { Document, Page, pdfjs } from 'react-pdf';
+import { useState, useRef, useEffect } from 'react';
+import { 
+  Document, 
+  Page, 
+  pdfjs 
+} from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
-import { ChevronLeft, ChevronRight, FileUp, ZoomIn, ZoomOut, AlignCenter, AlignLeft, AlignRight } from 'lucide-react';
+import { 
+  FileUp, 
+  Download, 
+  Share2, 
+  ChevronLeft, 
+  ChevronRight, 
+  Type, 
+  ImageIcon, 
+  Settings, 
+  TextCursor,
+  Palette,
+  AlignCenter,
+  AlignLeft,
+  AlignRight,
+  Upload
+} from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
-import NavBar from '@/components/NavBar';
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
-type WatermarkPosition = 'top-left' | 'top-center' | 'top-right' | 'center' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+interface WatermarkPreviewProps {
+  type: 'text' | 'image';
+  text?: string;
+  imageUrl?: string;
+  color?: string;
+  opacity: number;
+  fontSize?: number;
+  position: 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+}
 
-const PDFWatermarker = () => {
-  const [originalFile, setOriginalFile] = useState<File | null>(null);
-  const [watermarkedFile, setWatermarkedFile] = useState<File | null>(null);
-  const [originalNumPages, setOriginalNumPages] = useState<number>(0);
-  const [originalPageNumber, setOriginalPageNumber] = useState(1);
-  const [originalZoom, setOriginalZoom] = useState(1);
-  const [watermarkText, setWatermarkText] = useState('');
-  const [watermarkPosition, setWatermarkPosition] = useState<WatermarkPosition>('center');
-  const [watermarkOpacity, setWatermarkOpacity] = useState(30);
-  const [watermarkRotation, setWatermarkRotation] = useState(0);
+const WatermarkPreview = ({ 
+  type,
+  text, 
+  imageUrl,
+  color, 
+  opacity, 
+  fontSize, 
+  position 
+}: WatermarkPreviewProps) => {
+  const positionStyles = {
+    'top-left': 'top-4 left-4',
+    'top-center': 'top-4 left-1/2 -translate-x-1/2',
+    'top-right': 'top-4 right-4',
+    'bottom-left': 'bottom-4 left-4',
+    'bottom-center': 'bottom-4 left-1/2 -translate-x-1/2',
+    'bottom-right': 'bottom-4 right-4'
+  };
+
+  if (type === 'text' && text) {
+    return (
+      <div 
+        className={`absolute ${positionStyles[position]} pointer-events-none`}
+        style={{
+          color,
+          opacity: opacity / 100,
+          fontSize: `${fontSize}px`,
+          transform: position.includes('center') ? 'translateX(-50%)' : undefined,
+          textShadow: '1px 1px 2px rgba(0,0,0,0.3)',
+          fontWeight: 'bold',
+          userSelect: 'none'
+        }}
+      >
+        {text}
+      </div>
+    );
+  }
+
+  if (type === 'image' && imageUrl) {
+    return (
+      <div 
+        className={`absolute ${positionStyles[position]} pointer-events-none`}
+        style={{
+          opacity: opacity / 100,
+          transform: position.includes('center') ? 'translateX(-50%)' : undefined,
+        }}
+      >
+        <img 
+          src={imageUrl} 
+          alt="Watermark" 
+          className="max-w-[200px] max-h-[200px] object-contain"
+        />
+      </div>
+    );
+  }
+
+  return null;
+};
+
+const AdvancedWatermarker = () => {
+  // File and PDF state
+  const [file, setFile] = useState<File | null>(null);
+  const [pdfPath, setPdfPath] = useState<string | null>(null);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [numPages, setNumPages] = useState<number | null>(null);
+
+  // Watermark configuration state
+  const [watermarkType, setWatermarkType] = useState<'text' | 'image'>('text');
+  const [watermarkText, setWatermarkText] = useState('Confidential');
+  const [watermarkColor, setWatermarkColor] = useState('#000000');
+  const [watermarkOpacity, setWatermarkOpacity] = useState(20);
+  const [watermarkFontSize, setWatermarkFontSize] = useState(48);
+  const [watermarkPosition, setWatermarkPosition] = useState<'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'>('top-center');
+  
+  // Image watermark state
+  const [watermarkImage, setWatermarkImage] = useState<{
+    file: File | null;
+    previewUrl: string | null;
+  }>({
+    file: null,
+    previewUrl: null
+  });
+
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.type === 'application/pdf') {
-      setOriginalFile(file);
-      setOriginalPageNumber(1);
-      setOriginalZoom(1);
+    const uploadedFile = e.target.files?.[0];
+    if (uploadedFile && uploadedFile.type === 'application/pdf') {
+      setFile(uploadedFile);
+      setPdfPath(URL.createObjectURL(uploadedFile));
+      setPageNumber(1);
     }
   };
 
-  const renderWatermarkedPage = () => {
-    if (!originalFile) return null;
-
-    return (
-      <div className="relative">
-        <Document file={originalFile}>
-          <Page pageNumber={originalPageNumber} width={600 * originalZoom} />
-        </Document>
-        {watermarkText && (
-          <div 
-            className="absolute inset-0 pointer-events-none z-10 flex items-center justify-center"
-            style={{
-              opacity: watermarkOpacity / 100,
-              transform: `rotate(${watermarkRotation}deg)`,
-            }}
-          >
-            <div 
-              className={`text-gray-500 font-bold text-4xl select-none text-center`}
-              style={{
-                ...(watermarkPosition === 'top-left' && { top: '10%', left: '10%', position: 'absolute' }),
-                ...(watermarkPosition === 'top-center' && { top: '10%', left: '50%', transform: 'translateX(-50%)' }),
-                ...(watermarkPosition === 'top-right' && { top: '10%', right: '10%', position: 'absolute' }),
-                ...(watermarkPosition === 'center' && { position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }),
-                ...(watermarkPosition === 'bottom-left' && { bottom: '10%', left: '10%', position: 'absolute' }),
-                ...(watermarkPosition === 'bottom-center' && { bottom: '10%', left: '50%', transform: 'translateX(-50%)' }),
-                ...(watermarkPosition === 'bottom-right' && { bottom: '10%', right: '10%', position: 'absolute' }),
-              }}
-            >
-              {watermarkText}
-            </div>
-          </div>
-        )}
-      </div>
-    );
+  const handleWatermarkImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const uploadedFile = e.target.files?.[0];
+    if (uploadedFile && uploadedFile.type.startsWith('image/')) {
+      setWatermarkImage({
+        file: uploadedFile,
+        previewUrl: URL.createObjectURL(uploadedFile)
+      });
+    }
   };
 
-  return (
-    <div className="container mx-auto p-4 bg-gray-50 min-h-screen">
-      <NavBar />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Original File Preview */}
-        <div className="bg-white shadow-lg rounded-lg p-4">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Original Document</h2>
-            <div className="flex items-center space-x-2">
-              <Button 
-                variant="outline" 
-                size="icon" 
-                onClick={() => setOriginalZoom(Math.max(0.5, originalZoom - 0.25))}
-              >
-                <ZoomOut className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="outline" 
-                size="icon" 
-                onClick={() => setOriginalZoom(Math.min(2, originalZoom + 0.25))}
-              >
-                <ZoomIn className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+  const handleDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+    setNumPages(numPages);
+  };
+  const positionOptions = [
+    { value: 'top-left', icon: <AlignLeft /> },
+    { value: 'top-center', icon: <AlignCenter/> },
+    { value: 'top-right', icon: <AlignRight /> },
+    { value: 'bottom-left', icon: <AlignLeft /> },
+    { value: 'bottom-center', icon: <AlignCenter/> },
+    { value: 'bottom-right', icon: <AlignRight /> }
+  ];
 
-          {/* File Upload */}
-          {!originalFile ? (
-            <div className="border-2 border-dashed border-gray-300 p-8 text-center">
-              <input 
-                type="file" 
-                accept=".pdf"
-                onChange={handleFileUpload}
-                className="hidden"
-                id="pdf-upload"
-              />
-              <label 
-                htmlFor="pdf-upload" 
-                className="cursor-pointer flex flex-col items-center"
-              >
-                <FileUp className="h-12 w-12 text-gray-400 mb-4" />
-                <span className="text-gray-600">Click to upload PDF</span>
-              </label>
-            </div>
-          ) : (
+  return (
+    <div className="container mx-auto max-w-6xl p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* PDF Preview Section */}
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <FileUp className="mr-2" /> PDF Preview
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="relative">
+          {pdfPath ? (
             <div className="relative">
               <Document 
-                file={originalFile}
-                onLoadSuccess={({ numPages }) => setOriginalNumPages(numPages)}
+                file={pdfPath} 
+                onLoadSuccess={handleDocumentLoadSuccess}
+                className="relative"
               >
                 <Page 
-                  pageNumber={originalPageNumber}
-                  width={600 * originalZoom}
-                  renderAnnotationLayer={false} // Optional
-                  renderTextLayer={false} // Optional
+                  pageNumber={pageNumber} 
+                  width={500}
+                  className="border shadow-lg rounded-lg overflow-hidden"
                 />
+                {watermarkType === 'text' && watermarkText && (
+                  <WatermarkPreview 
+                    type="text"
+                    text={watermarkText}
+                    color={watermarkColor}
+                    opacity={watermarkOpacity}
+                    fontSize={watermarkFontSize}
+                    position={watermarkPosition}
+                  />
+                )}
+                {watermarkType === 'image' && watermarkImage.previewUrl && (
+                  <WatermarkPreview 
+                    type="image"
+                    imageUrl={watermarkImage.previewUrl}
+                    opacity={watermarkOpacity}
+                    position={watermarkPosition}
+                  />
+                )}
               </Document>
-
-              {/* Pagination */}
+              {/* Page Navigation */}
               <div className="flex justify-between mt-4">
                 <Button 
                   variant="outline"
-                  onClick={() => setOriginalPageNumber(Math.max(1, originalPageNumber - 1))}
-                  disabled={originalPageNumber <= 1}
+                  onClick={() => setPageNumber(Math.max(1, pageNumber - 1))}
+                  disabled={pageNumber <= 1}
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft className="mr-2" /> Previous
                 </Button>
-                <span>Page {originalPageNumber} of {originalNumPages}</span>
+                <span className="self-center">
+                  Page {pageNumber} of {numPages}
+                </span>
                 <Button 
                   variant="outline"
-                  onClick={() => setOriginalPageNumber(Math.min(originalNumPages, originalPageNumber + 1))}
-                  disabled={originalPageNumber >= originalNumPages}
+                  onClick={() => setPageNumber(Math.min(numPages || 1, pageNumber + 1))}
+                  disabled={pageNumber >= (numPages || 1)}
                 >
-                  <ChevronRight className="h-4 w-4" />
+                  Next <ChevronRight className="ml-2" />
                 </Button>
               </div>
             </div>
-          )}
-        </div>
-
-        {/* Watermark Configuration and Preview */}
-        <div className="bg-white shadow-lg rounded-lg p-4">
-          <h2 className="text-xl font-semibold mb-4">Watermark Configuration</h2>
-
-          {/* Watermark Text Input */}
-          <div className="mb-4">
-            <Label>Watermark Text</Label>
-            <Input 
-              value={watermarkText}
-              onChange={(e) => setWatermarkText(e.target.value)}
-              placeholder="Enter watermark text"
-            />
-          </div>
-
-          {/* Watermark Position */}
-          <div className="mb-4">
-            <Label>Watermark Position</Label>
-            <div className="grid grid-cols-3 gap-2 mt-2">
-              {['top-left', 'top-center', 'top-right', 'center', 'bottom-left', 'bottom-center', 'bottom-right'].map((value) => (
-                <Button
-                  key={value}
-                  variant={watermarkPosition === value ? 'default' : 'outline'}
-                  onClick={() => setWatermarkPosition(value)}
-                  className="flex items-center justify-center"
-                >
-                  {value.includes('left') ? (
-                    <AlignLeft className="h-4 w-4" />
-                  ) : value.includes('center') ? (
-                    <AlignCenter className="h-4 w-4" />
-                  ) : (
-                    <AlignRight className="h-4 w-4" />
-                  )}
-                </Button>
-              ))}
+          ) : (
+            <div className="h-96 flex items-center justify-center border-2 border-dashed rounded-lg">
+              <Input 
+                type="file" 
+                accept=".pdf"
+                onChange={handleFileUpload}
+              />
             </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Watermark Configuration Section */}
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Settings className="mr-2" /> Watermark Configuration
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Watermark Type Selector */}
+          <div>
+            <Label>Watermark Type</Label>
+            <RadioGroup 
+              value={watermarkType}
+              onValueChange={(value: 'text' | 'image') => {
+                setWatermarkType(value);
+                // Reset related state when switching
+                if (value === 'text') {
+                  setWatermarkImage({ file: null, previewUrl: null });
+                } else {
+                  setWatermarkText('');
+                }
+              }}
+              className="flex space-x-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="text" id="text-watermark" />
+                <Label htmlFor="text-watermark" className="flex items-center">
+                  <Type className="mr-2" /> Text
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="image" id="image-watermark" />
+                <Label htmlFor="image-watermark" className="flex items-center">
+                  <ImageIcon className="mr-2" /> Image
+                </Label>
+              </div>
+            </RadioGroup>
           </div>
 
+          {/* Conditional Rendering based on Watermark Type */}
+          {watermarkType === 'text' ? (
+            <>
+              {/* Text Watermark Configurations */}
+              <div>
+                <Label>Watermark Text</Label>
+                <Input 
+                  value={watermarkText}
+                  onChange={(e) => setWatermarkText(e.target.value)}
+                  placeholder="Enter watermark text"
+                />
+              </div>
+
+              {/* Color Picker */}
+              <div>
+                <Label>Watermark Color</Label>
+                <div className="flex items-center space-x-4">
+                  <Input 
+                    type="color" 
+                    value={watermarkColor}
+                    onChange={(e) => setWatermarkColor(e.target.value)}
+                    className="w-16 h-10 p-0 border-none"
+                  />
+                  <span>{watermarkColor}</span>
+                </div>
+              </div>
+
+              {/* Font Size */}
+              <div>
+                <Label>Font Size</Label>
+                <Slider
+                  value={[watermarkFontSize]}
+                  onValueChange={(value) => setWatermarkFontSize(value[0])}
+                  min={12}
+                  max={120}
+                  step={1}
+                />
+                <div className="text-sm text-gray-500 mt-2">
+                  {watermarkFontSize} px
+                </div>
+              </div>
+            </>
+          ) : (
+            /* Image Watermark Configurations */
+            <div>
+              <Label>Upload Watermark Image</Label>
+              <div className="flex items-center space-x-4">
+                <Input 
+                  type="file" 
+                  accept="image/*"
+                  ref={imageInputRef}
+                  onChange={handleWatermarkImageUpload}
+                  className="flex-grow"
+                />
+                {watermarkImage.previewUrl && (
+                  <img 
+                    src={watermarkImage.previewUrl} 
+                    alt="Watermark Preview" 
+                    className="w-16 h-16 object-cover rounded"
+                  />
+                )}
+              </div>
+              {watermarkImage.file && (
+                <p className="text-sm text-gray-500 mt-2">
+                  {watermarkImage.file.name}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Common Configurations */}
           {/* Opacity Slider */}
-          <div className="mb-4">
+          <div>
             <Label>Opacity</Label>
             <Slider
               value={[watermarkOpacity]}
@@ -199,33 +360,46 @@ const PDFWatermarker = () => {
               max={100}
               step={1}
             />
+            <div className="text-sm text-gray-500 mt-2">
+              {watermarkOpacity}%
+            </div>
           </div>
 
-          {/* Rotation Slider */}
-          <div className="mb-4">
-            <Label>Rotation</Label>
-            <Slider
-              value={[watermarkRotation]}
-              onValueChange={(value) => setWatermarkRotation(value[0])}
-              min={-180}
-              max={180}
-              step={1}
-            />
+          {/* Position Selector */}
+          <div>
+            <Label>Watermark Position</Label>
+            <RadioGroup 
+              value={watermarkPosition}
+              onValueChange={(value: typeof watermarkPosition) => setWatermarkPosition(value)}
+              className="grid grid-cols-3 gap-2"
+            >
+              {positionOptions.map((option) => (
+                <div key={option.value} className="flex items-center space-x-2">
+                  <RadioGroupItem value={option.value} id={option.value} />
+                  <Label 
+                    htmlFor={option.value} 
+                    className="flex items-center cursor-pointer"
+                  >
+                    {option.icon}
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
           </div>
 
-          {/* Watermarked Preview */}
-          <div className="relative">
-            <h3 className="text-lg font-semibold mb-4">Watermarked Preview</h3>
-            {originalFile ? renderWatermarkedPage() : (
-              <div className="border-2 border-dashed border-gray-300 p-8 text-center text-gray-600">
-                Upload a PDF to see watermark preview
-              </div>
-            )}
+          {/* Action Buttons */}
+          <div className="flex space-x-4">
+            <Button className="flex-grow">
+              <Download className="mr-2" /> Download
+            </Button>
+            <Button variant="outline" className="flex-grow">
+              <Share2 className="mr-2" /> Share
+            </Button>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
 
-export default PDFWatermarker;
+export default AdvancedWatermarker;
