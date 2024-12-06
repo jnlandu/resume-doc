@@ -24,6 +24,15 @@ import {
   AlignRight,
   Upload
 } from 'lucide-react';
+import { saveAs } from 'file-saver';
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -113,6 +122,9 @@ const WatermarkPreview = ({
 };
 
 const AdvancedWatermarker = () => {
+  const { toast } = useToast();
+
+
   // File and PDF state
   const [file, setFile] = useState<File | null>(null);
   const [pdfPath, setPdfPath] = useState<string | null>(null);
@@ -126,6 +138,12 @@ const AdvancedWatermarker = () => {
   const [watermarkOpacity, setWatermarkOpacity] = useState(20);
   const [watermarkFontSize, setWatermarkFontSize] = useState(48);
   const [watermarkPosition, setWatermarkPosition] = useState<'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'>('top-center');
+  const [isWatermarking, setIsWatermarking] = useState(false);
+
+  // Dialog state and sharing:
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [shareLink, setShareLink] = useState('');
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   
   // Image watermark state
   const [watermarkImage, setWatermarkImage] = useState<{
@@ -168,6 +186,141 @@ const AdvancedWatermarker = () => {
     { value: 'bottom-center', icon: <AlignCenter/> },
     { value: 'bottom-right', icon: <AlignRight /> }
   ];
+
+  const handleApplyWatermark = async () => {
+    if (!file) return;
+  
+    setIsWatermarking(true); // Start loading
+    const reader = new FileReader();
+  
+    reader.onload = async () => {
+      try {
+        const base64File = reader.result?.toString().split(',')[1];
+  
+        const response = await fetch('/api/watermark', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            file: base64File,
+            watermarkText,
+            watermarkColor,
+            watermarkOpacity,
+            watermarkPosition,
+          }),
+        });
+  
+        const data = await response.json();
+        
+        if (response.ok) {
+          const pdfBlob = new Blob([Buffer.from(data.file, 'base64')], { type: 'application/pdf' });
+          const pdfUrl = URL.createObjectURL(pdfBlob);
+          setPdfPath(pdfUrl);
+          
+          toast({
+            title: "Watermark applied",
+            description: "Your PDF has been successfully watermarked.",
+          });
+        } else {
+          throw new Error(data.message);
+        }
+      } catch (error) {
+        console.error(error);
+        toast({
+          title: "Watermark failed",
+          description: "There was an error applying the watermark.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsWatermarking(false); // Stop loading
+      }
+    };
+  
+    reader.readAsDataURL(file);
+  };
+
+
+// Handle sharing and downloading:
+// Add these handler functions
+const handleDownload = async () => {
+  if (!pdfPath) {
+    toast({
+      title: "No PDF to download",
+      // description: "Please upload and watermark a PDF first.",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  try {
+    const response = await fetch(pdfPath);
+    const blob = await response.blob();
+    const fileName = file?.name || 'watermarked-document.pdf';
+    saveAs(blob, `watermarked-${fileName}`);
+    
+    toast({
+      title: "Download started",
+      description: "Your watermarked PDF is being downloaded.",
+    });
+  } catch (error) {
+    console.error('Download error:', error);
+    toast({
+      title: "Download failed",
+      description: "There was an error downloading your PDF.",
+      variant: "destructive",
+    });
+  }
+};
+
+const handleShare = async () => {
+  if (!pdfPath) {
+    toast({
+      title: "No PDF to share",
+      description: "Please upload and watermark a PDF first.",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  setIsGeneratingLink(true);
+  try {
+    // Convert the current PDF to base64
+    const response = await fetch(pdfPath);
+    const blob = await response.blob();
+    const base64 = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+
+    // Upload to your storage service and get sharing link
+    const uploadResponse = await fetch('/api/upload', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        file: base64,
+        fileName: file?.name || 'watermarked-document.pdf',
+      }),
+    });
+
+    const { shareUrl } = await uploadResponse.json();
+    setShareLink(shareUrl);
+    setIsShareDialogOpen(true);
+  } catch (error) {
+    console.error('Share error:', error);
+    toast({
+      title: "Sharing failed",
+      description: "There was an error generating the share link.",
+      variant: "destructive",
+    });
+  } finally {
+    setIsGeneratingLink(false);
+  }
+};
+
 
   return (
    <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
@@ -394,17 +547,120 @@ const AdvancedWatermarker = () => {
             </RadioGroup>
           </div>
           {/* Action Buttons */}
+          
           <div className="flex space-x-4 pt-4 border-t">
-            <Button className="flex-grow bg-primary hover:bg-primary/90 text-white">
-              Apply
+          <Button 
+              className="flex-grow bg-primary hover:bg-primary/90 text-white"
+              onClick={handleApplyWatermark}
+              disabled={!file || isWatermarking}
+            >
+              {isWatermarking ? (
+                <>
+                  <svg 
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    fill="none" 
+                    viewBox="0 0 24 24"
+                  >
+                    <circle 
+                      className="opacity-25" 
+                      cx="12" 
+                      cy="12" 
+                      r="10" 
+                      stroke="currentColor" 
+                      strokeWidth="4"
+                    />
+                    <path 
+                      className="opacity-75" 
+                      fill="currentColor" 
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Watermarking...
+                </>
+              ) : (
+                <>
+                  <Upload className="mr-2 h-4 w-4" /> Apply
+                </>
+              )}
             </Button>
-            <Button variant="outline" className="flex-grow hover:bg-gray-50">
-              <Download className="mr-2 h-4 w-4" /> Download
-            </Button>
-            <Button variant="outline" className="flex-grow hover:bg-gray-50">
-              <Share2 className="mr-2 h-4 w-4" /> Share
-            </Button>
+      
+        <Button 
+          variant="outline" 
+          className="flex-grow hover:bg-gray-50"
+          onClick={handleDownload}
+          disabled={!pdfPath}
+        >
+          <Download className="mr-2 h-4 w-4" /> Download
+        </Button>
+
+      <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+        <DialogTrigger asChild>
+          <Button 
+            variant="outline" 
+            className="flex-grow hover:bg-gray-50"
+            onClick={handleShare}
+            disabled={!pdfPath || isGeneratingLink}
+          >
+            {isGeneratingLink ? (
+              <>
+                <span className="animate-spin mr-2">⏳</span> Generating...
+              </>
+            ) : (
+              <>
+                <Share2 className="mr-2 h-4 w-4" /> Share
+              </>
+            )}
+          </Button>
+        </DialogTrigger>
+        
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Share Your Document</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Input 
+                value={shareLink} 
+                readOnly 
+                className="flex-1"
+              />
+              <Button
+                variant="outline"
+                onClick={() => {
+                  navigator.clipboard.writeText(shareLink);
+                  toast({
+                    title: "Link copied",
+                    description: "Share link has been copied to clipboard.",
+                  });
+                }}
+              >
+                Copy
+              </Button>
+            </div>
+            <div className="flex justify-center space-x-4">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareLink)}`);
+                }}
+              >
+                Share on Twitter
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareLink)}`);
+                }}
+              >
+                Share on LinkedIn
+              </Button>
+            </div>
           </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+
         </CardContent>
       </Card>
     </div>
