@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Copy, RefreshCw, AlertCircle, Info, FileText, Wand2 } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Copy, RefreshCw, AlertCircle, Info, FileText, Wand2, Type } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,10 +10,29 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import NavBar from '@/components/NavBar';
 
 const Paraphraser = () => {
+  const MAX_WORDS = 250; // Maximum number of words allowed
   const [inputText, setInputText] = useState('');
   const [paraphrasedText, setParaphrasedText] = useState('');
   const [error, setError] = useState('');
   const [activeMode, setActiveMode] = useState('standard');
+
+  // Calculate word count in real-time
+  const wordCount = useMemo(() => {
+    return inputText.trim().split(/\s+/).filter(word => word.length > 0).length;
+  }, [inputText]);
+
+  const handleInputChange = (e) => {
+    const text = e.target.value;
+    
+    // Limit input to MAX_WORDS
+    const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+    if (words.length <= MAX_WORDS) {
+      setInputText(text);
+      setError('');
+    } else {
+      setError(`Maximum ${MAX_WORDS} words allowed`);
+    }
+  };
 
   const handleParaphrase = () => {
     setError('');
@@ -79,7 +98,7 @@ const Paraphraser = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {/* Rest of the component remains the same */}
+            {/* Mode Selection Tabs */}
             <Tabs 
               defaultValue="standard" 
               onValueChange={setActiveMode}
@@ -111,6 +130,16 @@ const Paraphraser = () => {
               </AlertDescription>
             </Alert>
 
+            {/* Word Count and Error Alert */}
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center space-x-2">
+                <Type className="h-5 w-5 text-gray-500" />
+                <span className="text-sm text-gray-700">
+                  Words: {wordCount} / {MAX_WORDS}
+                </span>
+              </div>
+            </div>
+
             {/* Error Alert */}
             {error && (
               <Alert variant="destructive" className="mb-4">
@@ -123,7 +152,7 @@ const Paraphraser = () => {
             <Textarea 
               placeholder="Enter text to paraphrase"
               value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
+              onChange={handleInputChange}
               className="mb-4 min-h-[200px]"
             />
             
@@ -132,6 +161,7 @@ const Paraphraser = () => {
               <Button 
                 onClick={handleParaphrase}
                 className="flex-1"
+                disabled={wordCount === 0 || wordCount > MAX_WORDS}
               >
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Paraphrase ({activeMode} mode)
