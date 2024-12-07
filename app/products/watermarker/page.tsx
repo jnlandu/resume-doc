@@ -139,21 +139,23 @@ const AdvancedWatermarker = () => {
   const [watermarkFontSize, setWatermarkFontSize] = useState(48);
   const [watermarkPosition, setWatermarkPosition] = useState<'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'>('top-center');
   const [isWatermarking, setIsWatermarking] = useState(false);
+  const [watermarkImageSize, setWatermarkImageSize] = useState(200); // Default size in pixels
 
   // Dialog state and sharing:
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [shareLink, setShareLink] = useState('');
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   
-  // Image watermark state
-  const [watermarkImage, setWatermarkImage] = useState<{
-    file: File | null;
-    previewUrl: string | null;
-  }>({
-    file: null,
-    previewUrl: null
-  });
-
+  // Update the WatermarkImage type
+const [watermarkImage, setWatermarkImage] = useState<{
+  file: File | null;
+  previewUrl: string | null;
+  base64Data?: string | null;  // Add this field
+}>({
+  file: null,
+  previewUrl: null,
+  base64Data: null
+});
   const imageInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -165,15 +167,29 @@ const AdvancedWatermarker = () => {
     }
   };
 
-  const handleWatermarkImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const uploadedFile = e.target.files?.[0];
-    if (uploadedFile && uploadedFile.type.startsWith('image/')) {
-      setWatermarkImage({
-        file: uploadedFile,
-        previewUrl: URL.createObjectURL(uploadedFile)
-      });
-    }
-  };
+  // Update the handleWatermarkImageUpload function
+const handleWatermarkImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadedFile = e.target.files?.[0];
+  if (uploadedFile && uploadedFile.type.startsWith('image/')) {
+    // Create blob URL for preview
+    const previewUrl = URL.createObjectURL(uploadedFile);
+    
+    // Read file as base64
+    const base64Data = await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        resolve(reader.result as string);
+      };
+      reader.readAsDataURL(uploadedFile);
+    });
+
+    setWatermarkImage({
+      file: uploadedFile,
+      previewUrl: previewUrl,
+      base64Data: base64Data  // Add this to store base64 data
+    });
+  }
+};
 
   const handleDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
@@ -204,7 +220,10 @@ const AdvancedWatermarker = () => {
           },
           body: JSON.stringify({
             file: base64File,
-            watermarkText,
+            watermarkType,
+            watermarkText: watermarkType === 'text' ? watermarkText : undefined,
+            watermarkImage: watermarkType === 'image' ? watermarkImage.base64Data : undefined,  // Use base64Data instead of previewUrl
+            watermarkImageSize,   // 200, // Set a default size for image watermarks
             watermarkColor,
             watermarkOpacity,
             watermarkPosition,
@@ -295,7 +314,7 @@ const handleShare = async () => {
     });
 
     // Upload to your storage service and get sharing link
-    const uploadResponse = await fetch('/api/upload', {
+    const uploadResponse = await fetch('/api/upload/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -489,7 +508,7 @@ const handleShare = async () => {
               <div className="flex items-center space-x-4">
                 <Input 
                   type="file" 
-                  accept="image/*"
+                  accept="image/png,image/jpeg,image/jpg"  // Update this line
                   ref={imageInputRef}
                   onChange={handleWatermarkImageUpload}
                   className="flex-grow"
