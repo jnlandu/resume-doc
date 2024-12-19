@@ -24,7 +24,7 @@ const products = [
     id: 1,
     name: "Document Summarizer",
     description: "Transform lengthy documents into concise, actionable summaries with AI-powered precision.",
-    price: "$9.99/month",
+    price: "$4.99/month",
     features: [
       "Multi-format document support",
       "Customizable summary length",
@@ -36,7 +36,7 @@ const products = [
     id: 2,
     name: "AI Document Assistant",
     description: "Engage in intelligent conversations with your documents through advanced natural language processing.",
-    price: "$14.99/month",
+    price: "$9.99/month",
     features: [
       "Context-aware Q&A",
       "Cross-document analysis",

@@ -45,6 +45,7 @@ import NavBar from '@/components/NavBar';
 import PlagiarismDetector from '@/components/plagiarism';
 import ReadabilityAnalysis from '@/components/readability-analysis';
 import CitationGenerator from '@/components/citationGenerator';
+import ParaphraserFeatures from '@/lib/paraphrase-features';
 
 const Paraphraser = () => {
   const MAX_WORDS = 250; // Maximum number of words allowed
@@ -280,6 +281,8 @@ const Paraphraser = () => {
             )}
           </CardContent>
         </Card>
+        {/* New Features Section */}
+        <ParaphraserFeatures />
       </div>
       
     </div>
