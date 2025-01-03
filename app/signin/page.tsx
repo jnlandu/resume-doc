@@ -49,25 +49,54 @@ const SignIn = () => {
     <div className="min-h-screen flex bg-gray-50">
        {/* Left side - Illustration */}
         <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-blue-500 to-blue-700 p-12">
-          <div className="relative w-full max-w-lg mx-auto">
-            <div className="absolute top-0 -left-4 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-            <div className="absolute top-0 -right-4 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-            <div className="absolute -bottom-8 left-20 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
-            
-            <Image
-              src="https://raw.githubusercontent.com/hq-app/assets/main/undraw_secure_login_pdn4.svg"
-              alt="Login Illustration"
-              width={500}
-              height={500}
-              className="relative z-10 w-full h-auto transform transition-transform duration-500 hover:scale-105"
-              priority
-            />
-            <div className="relative z-10 mt-8 text-white text-center">
-              <h2 className="text-4xl font-bold mb-4">Welcome Back!</h2>
-              <p className="text-lg text-blue-100">Access your account and manage your documents.</p>
-            </div>
-          </div>
-        </div>
+  <div className="relative w-full max-w-lg mx-auto">
+    {/* Animated background blobs */}
+    <div className="absolute top-0 -left-4 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+    <div className="absolute top-0 -right-4 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+    <div className="absolute -bottom-8 left-20 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+    
+    {/* Main PDF Document Illustration */}
+    <div className="relative z-20 flex justify-center items-center">
+      <Image
+        src="https://raw.githubusercontent.com/hq-app/assets/main/undraw_document.svg"
+        alt="PDF Document"
+        width={400}
+        height={400}
+        className="transform transition-all duration-500 hover:scale-105"
+        priority
+      />
+      
+      {/* Floating Pen Animation */}
+      <div className="absolute -top-4 -right-4 animate-float">
+        <Image
+          src="https://raw.githubusercontent.com/hq-app/assets/main/undraw_pen.svg"
+          alt="Editing Pen"
+          width={100}
+          height={100}
+          className="transform -rotate-45"
+          priority
+        />
+      </div>
+      
+      {/* Watermark/Summary Icon with Pulse */}
+      <div className="absolute -bottom-4 -right-4 animate-pulse">
+        <Image
+          src="https://raw.githubusercontent.com/hq-app/assets/main/undraw_abstract.svg"
+          alt="Document Summary"
+          width={120}
+          height={120}
+          priority
+        />
+      </div>
+    </div>
+
+    {/* Text Content */}
+    <div className="relative z-30 mt-8 text-white text-center">
+      <h2 className="text-4xl font-bold mb-4">Transform Your Documents</h2>
+      <p className="text-lg text-blue-100">Summarize, Edit, and Secure your PDFs with ease</p>
+    </div>
+  </div>
+</div>
       {/* Right side - Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
           <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl">
