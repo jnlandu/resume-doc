@@ -184,10 +184,10 @@ const formatExtractedText = (text: string) => {
         // Return raw text
         return text;
       case 'JSON':
-        // Convert text to JSON
+        // Convert text to JSON and return it 
         return JSON.stringify({ extractedText: text }, null, 2);
       case 'XML':
-        // Convert text to XML
+        // Convert text to XML and return it
         return `<?xml version="1.0" encoding="UTF-8"?>
 <extracted-text>${text}</extracted-text>`;
       default:
