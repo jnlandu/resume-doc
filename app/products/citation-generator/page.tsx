@@ -1,6 +1,6 @@
 'use client';
 
-import NavBar from '@/components/NavBar';
+// import NavBar from '@/components/NavBar';
 import React, { useState } from 'react';
 
 export default function CitationGenerator() {
@@ -19,7 +19,7 @@ export default function CitationGenerator() {
 
   return (
     <main className="container mx-auto p-6 bg-gray-50 min-h-screen">
-    <NavBar/>
+    {/* <NavBar/> */}
     <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
       <div className="max-w-2xl mx-auto bg-white shadow-md rounded-lg p-8">
         <h1 className="text-3xl font-bold text-blue-600 mb-6">Citation Generator</h1>

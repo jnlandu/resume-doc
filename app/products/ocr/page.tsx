@@ -201,7 +201,7 @@ const formatExtractedText = (text: string) => {
 
   return (
     <main className="container mx-auto p-6 bg-gray-50 min-h-screen">
-      <NavBar/>
+      {/* <NavBar/> */}
       
       {/* Hero Section */}
       <div className="bg-blue-600 text-white py-12 text-center mb-6">

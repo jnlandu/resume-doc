@@ -97,7 +97,7 @@ const Paraphraser = () => {
   return (
 
     <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
-      <NavBar />
+      {/* <NavBar /> */}
       <div className="container mx-auto px-4 py-8">
         <Card className="max-w-4xl mx-auto">
           <CardHeader>

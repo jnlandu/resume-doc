@@ -71,7 +71,7 @@ const Pricing = () => {
   return (
     <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
       {/* Navbar */}
-        <NavBar/>
+        {/* <NavBar/> */}
       {/* Rest of the pricing page content remains the same as in the previous artifact */}
       {/* Hero Section */}
       <div className="container mx-auto px-6 pt-16 text-center">
