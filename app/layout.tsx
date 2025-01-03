@@ -1,7 +1,13 @@
+
+
 import "./globals.css"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { Toaster } from "@/components/ui/toaster";
+import { useState } from "react";
+import Link from "next/link";
+import NavBar from "@/components/NavBar";
+import NavBarClient from "@/components/NavBarClient";
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -14,10 +20,46 @@ export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
-}) {
+}) 
+{
+  // const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // const toggleMenu = () => {
+  //   setIsMenuOpen(!isMenuOpen);
+  // };
+
+  const menuItems = [
+    { name: 'Home', href: '#' },
+    { name: 'About', href: '#about' },
+    { name: 'Features', href: '#features' },
+    { name: 'Sign In', href: '#signin' },
+    { name: 'Contact', href: '#contact' },
+  ];
+
   return (
     <html lang="en">
       <body className={inter.className}>
+            {/* Mobile Menu
+          <div className={`fixed inset-y-0 left-0 w-64 bg-white z-40 transform transition-all duration-300 ease-in-out lg:hidden
+            ${isMenuOpen ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'}`}>
+            <div className="pt-16 px-4">
+              {menuItems.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="block py-3 text-lg font-medium text-gray-900 border-b border-gray-200 transition-colors hover:text-blue-600"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+          </div> */}
+          {/* Regular NavBar (hidden on mobile) */}
+          {/* <div className="hidden md:block">
+            <NavBar />
+          </div> */}
+          <NavBarClient/>
 
         {children}
         <Toaster />

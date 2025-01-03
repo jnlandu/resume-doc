@@ -343,7 +343,7 @@ const handleShare = async () => {
 
   return (
    <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
-    <NavBar/>
+    {/* <NavBar/> */}
     <Hero/>
     <div className="container mx-auto max-w-6xl p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* PDF Preview Section */}
