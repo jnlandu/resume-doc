@@ -8,7 +8,7 @@ const Pricing = () => {
   const plans = [
     {
       name: "Basic",
-      price: "$9.99",
+      price: "$4.99",
       features: [
         "1 User",
         "Basic Support",
@@ -21,7 +21,7 @@ const Pricing = () => {
     },
     {
       name: "Pro",
-      price: "$19.99",
+      price: "$9.99",
       features: [
         "Up to 5 Users",
         "Priority Support",
@@ -34,7 +34,7 @@ const Pricing = () => {
     },
     {
       name: "Enterprise",
-      price: "$49.99",
+      price: "$19.99",
       features: [
         "Unlimited Users",
         "Dedicated Support",
