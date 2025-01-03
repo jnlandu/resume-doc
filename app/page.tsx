@@ -66,7 +66,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-      {/* Regular NavBar (hidden on mobile) */}
+      {/* Regular NavBar (hidden on mobile device) */}
       <div className="hidden md:block">
         <NavBar />
       </div>
