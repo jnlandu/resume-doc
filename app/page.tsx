@@ -162,15 +162,15 @@ export default function Home() {
           </li>
           <li>
             <strong className="text-gray900">Phone:</strong>{' '}
-            <span>(+221) 77 200 38 35 </span>
+            <span>(+243) 81 090 1443 </span>
           </li>
           <li>
             <strong className="text-gray900">Address:</strong>{' '}
-            <span> Mbour, Senegal</span>
+            <span> Kinshasa, DR Congo</span>
           </li>
         </ul>
         <div className="mt8">
-          <a href = "mailto:support@resumdoc.com"
+          <a href = "mailto:jnlandu00@gmail.com"
              className = "inline-block bg-blue600 text-white text-lg font-medium py3 px6 roundedlg shadow hover:bg-blue700 transition"
            >
              Get in Touch
