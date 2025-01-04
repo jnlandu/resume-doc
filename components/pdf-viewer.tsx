@@ -7,7 +7,12 @@ import 'react-pdf/dist/esm/Page/TextLayer.css';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
-const PDFViewer = () => {
+
+
+interface PDFViewerProps {
+  pdfPath?: string; // Make optional to handle both prop and fetched cases
+}
+const PDFViewer: React.FC<PDFViewerProps> = ({ pdfPath: propsPdfPath }) => {
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pdfPath, setPdfPath] = useState<string | null>(null);
   const [pageNumber, setPageNumber] = useState(1);

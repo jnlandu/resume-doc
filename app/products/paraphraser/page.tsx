@@ -69,7 +69,7 @@ const Paraphraser = () => {
     return inputText.trim().split(/\s+/).filter(word => word.length > 0).length;
   }, [inputText]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: any) => {
     const text = e.target.value;
     
     const words = text.trim().split(/\s+/).filter((word: string) => word.length > 0);

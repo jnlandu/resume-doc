@@ -7,7 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileUp, FileText, Loader2, FileIcon } from "lucide-react"
 import uploadPDF from "@/app/actions"
 
-const PDFUploader = () => {
+
+// components/pdf-uploader.tsx
+interface PDFUploaderProps {
+  onUploadSuccess: (path: string) => void;
+}
+
+const PDFUploader: React.FC<PDFUploaderProps> = ({ onUploadSuccess }) => {
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)

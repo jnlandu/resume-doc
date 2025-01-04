@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import { PDFDocument, StandardFonts, degrees, rgb } from 'pdf-lib';
 
 export async function POST(request: NextRequest) {
   try {
@@ -65,10 +65,8 @@ export async function POST(request: NextRequest) {
         font: helveticaFont,
         color: rgb(0.5, 0.5, 0.5),
         opacity: opacity / 100,
-        rotate: {
-          angle: rotation,
-          origin: { x, y }
-        }
+        rotate: degrees(rotation)
+        
       });
     });
 

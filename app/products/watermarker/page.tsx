@@ -227,6 +227,7 @@ const handleWatermarkImageUpload = async (e: React.ChangeEvent<HTMLInputElement>
             watermarkColor,
             watermarkOpacity,
             watermarkPosition,
+            // rotation: 0,  // Add this field
           }),
         });
   

@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import PDFUploader from './pdf-uploader';
 import PDFViewer from './pdf-viewer';
-// import PDFUploader from './PDFUploader';
-// import PDFViewer from './PDFViewer';
+
+
 
 const PDFUploadAndViewer = () => {
-  const [pdfPath, setPdfPath] = useState<string | null>(null);
+  const [pdfPath, setPdfPath] = useState<string>('');
 
   const handleUploadSuccess = (path: string) => {
     setPdfPath(path);

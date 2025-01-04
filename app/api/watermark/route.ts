@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PDFDocument, rgb } from 'pdf-lib';
+import { PDFDocument, rgb, degrees } from 'pdf-lib';
 
 async function getImageType(base64String: string): Promise<'png' | 'jpeg' | 'unknown'> {
   
@@ -51,6 +51,7 @@ async function getImageType(base64String: string): Promise<'png' | 'jpeg' | 'unk
 
 
 export async function POST(request: Request) {
+  
   try {
     const body = await request.json();
     const { 
@@ -61,9 +62,9 @@ export async function POST(request: Request) {
       watermarkColor, 
       watermarkOpacity, 
       watermarkPosition,
-      watermarkImageSize 
+      watermarkImageSize,
+      rotation = 0,
     } = body;
-
     // Validation checks...
     if (!file) {
       return NextResponse.json({ message: 'Missing PDF file' }, { status: 400 });
@@ -133,6 +134,7 @@ export async function POST(request: Request) {
           x,
           y,
           size: fontSize,
+          rotate: degrees(rotation), // Convert to proper Rotation type
           color: rgb(
             parseInt(watermarkColor.slice(1, 3), 16) / 255,
             parseInt(watermarkColor.slice(3, 5), 16) / 255,
@@ -225,6 +227,7 @@ export async function POST(request: Request) {
             y,
             width: imgDims.width,
             height: imgDims.height,
+            rotate: degrees(rotation), // Convert to proper Rotation type
             opacity: watermarkOpacity / 100,
           });
         } catch (error: any) {

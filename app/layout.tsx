@@ -22,19 +22,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) 
 {
-  // const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  // const toggleMenu = () => {
-  //   setIsMenuOpen(!isMenuOpen);
-  // };
-
-  const menuItems = [
-    { name: 'Home', href: '#' },
-    { name: 'About', href: '#about' },
-    { name: 'Features', href: '#features' },
-    { name: 'Sign In', href: '#signin' },
-    { name: 'Contact', href: '#contact' },
-  ];
+ 
 
   return (
     <html lang="en">

@@ -4,7 +4,10 @@ const nextConfig = {
   experimental: {
     serverExternalPackages: ['pdf-parse '],
   },
-  
+  "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
+    ],
   webpack: (config) => {
     config.resolve.alias.canvas = false;
     config.resolve.alias.encoding = false;

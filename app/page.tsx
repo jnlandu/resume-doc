@@ -14,9 +14,14 @@ import NavBarClient from '@/components/NavBarClient';
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [pdfPath, setPdfPath] = useState<string>('');
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleUploadSuccess = (path: string) => {
+    setPdfPath(path);
   };
   useEffect(() => {
     // Add animation class to feedback section on mount
@@ -41,8 +46,8 @@ export default function Home() {
       {/* Features Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div id="uploader" className="bg-white shadow-lg rounded-lg p-6">
-          <PDFUploader />
-          <PDFViewer />
+        <PDFUploader onUploadSuccess={handleUploadSuccess} />
+        <PDFViewer pdfPath={pdfPath} />
         </div>
         <div id="summary" className="bg-white shadow-lg rounded-lg p-6 space-y-8">
           <Summary />

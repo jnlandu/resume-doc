@@ -22,15 +22,15 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 
 
 export default function OCR() {
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [extractedText, setExtractedText] = useState('');
   // const [formatOptions, setFormatOptions] = useState('Plain Text');
   const [isLoading, setIsLoading] = useState(false);
   const [previewZoom, setPreviewZoom] = useState(1);
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [pdfPages, setPdfPages] = useState([]);
+  const [pdfPages, setPdfPages] = useState<string[]>([]); // Array of base64 strings
   const [formatOptions, setFormatOptions] = useState('Markdown'); // Default to Markdown
 
 
@@ -44,8 +44,16 @@ export default function OCR() {
     e.preventDefault();
     e.stopPropagation();
     const files = e.dataTransfer.files;
-    if (files.length > 0) {
+    if (files[0] ) {
       handleFileSelect(files[0]);
+    }
+  };
+
+
+  // Update the click handler with null check
+  const handleClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
  
@@ -71,8 +79,12 @@ export default function OCR() {
           canvas.height = viewport.height;
           const context = canvas.getContext('2d');
 
+          if (!context) {
+            throw new Error('Could not create canvas context');
+          }
           await page.render({ canvasContext: context, viewport }).promise;
           pageImages.push(canvas.toDataURL());
+          setPdfPages(pageImages); // Now TypeScript knows the types match
         }
         setPdfPages(pageImages);
       } catch (error) {
@@ -84,9 +96,14 @@ export default function OCR() {
     }
   };
 
-  const handleFileInputChange = (e: any) => {
-    const file = e.target.files[0];
-    handleFileSelect(file);
+  // const handleFileInputChange = (e: any) => {
+  //   const file = e.target.files[0];
+  //   handleFileSelect(file);
+  // };
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) {
+      setSelectedFile(e.target.files[0]);
+    }
   };
 
   const pdfToImage = async (file: any) => {
@@ -103,7 +120,11 @@ export default function OCR() {
       canvas.height = viewport.height;
       const context = canvas.getContext('2d');
 
-      await page.render({ canvasContext: context, viewport }).promise;
+      if (!context) {
+        throw new Error('Could not create canvas context');
+      }
+
+      await page.render({canvasContext: context, viewport }).promise;
       images.push(canvas.toDataURL());
     }
 
@@ -129,8 +150,18 @@ export default function OCR() {
         } else {
           const reader = new FileReader();
           reader.onloadend = () => {
+            if (!reader.result) {
+              console.error('Failed to read file');
+              return;
+            }
+
+              // Ensure we have a string (data URL) for Tesseract
+          const imageData = typeof reader.result === 'string' 
+          ? reader.result 
+          : Buffer.from(reader.result as ArrayBuffer).toString('base64');
+
             Tesseract.recognize(
-              reader.result,
+              imageData,
               'eng',
               {
                 logger: info => console.log(info),
@@ -217,7 +248,7 @@ const formatExtractedText = (text: string) => {
             <div 
               onDragOver={handleDragOver}
               onDrop={handleDrop}
-              onClick={() => fileInputRef.current.click()}
+              onClick={handleClick}
               className="border-2 border-dashed border-blue-400 rounded-xl p-10 text-center cursor-pointer 
                          hover:bg-blue-50 transition duration-300 ease-in-out 
                          flex flex-col items-center justify-center 
@@ -227,7 +258,7 @@ const formatExtractedText = (text: string) => {
                 type="file" 
                 ref={fileInputRef}
                 onChange={handleFileInputChange}
-                accept="image/*,.pdf"
+                accept=".pdf,.png,.jpg,.jpeg"
                 className="hidden"
               />
               <UploadCloud 
