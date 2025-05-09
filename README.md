@@ -11,10 +11,10 @@ A web application designed to help you quickly understand PDF documents through 
 
 ## Technology Stack
 
-* **Backend**: FastAPI
-* **Frontend**: React with TypeScript
+* **Backend**: NextJS API Routes
+* **Frontend**: NextJS with TypeScript
 * **Database**: PostgreSQL
-* **AI/ML**: Langchain, OpenAI API
+* **AI/ML**: Langchain, GROQ API
 * **Real-time Communication**: WebSockets
 * **Other Key Libraries/Tools**: Docker, Redis, Celery
 
@@ -24,15 +24,11 @@ Follow these instructions to set up the project locally.
 
 ### Prerequisites
 
-* Python 3.9+
 * Node.js v18+
 * Docker and Docker Compose
-* OpenAI API key
+* GROQ API key
 
 ```sh
-# Check Python version
-python --version
-
 # Check Node.js version
 node -v
 ```
@@ -47,20 +43,14 @@ node -v
     ```sh
     cd chat-with-pdf
     ```
-3. Install backend dependencies:
+3. Install dependencies:
     ```sh
-    pip install -r requirements.txt
-    ```
-4. Install frontend dependencies:
-    ```sh
-    cd frontend
     npm install
-    cd ..
     ```
-5. Set up environment variables:
+4. Set up environment variables:
     ```sh
-    cp .env.example .env
-    # Edit .env file with your OpenAI API key and other settings
+    cp .env.example .env.local
+    # Edit .env.local file with your GROQ API key and other settings
     ```
 
 ### Running the Application
@@ -73,15 +63,10 @@ docker-compose up
 
 #### Manual Setup
 
-1. Start the backend server:
-    ```sh
-    uvicorn app.main:app --reload
-    ```
-2. In a separate terminal, start the frontend:
-    ```sh
-    cd frontend
-    npm start
-    ```
+Start the development server:
+```sh
+npm run dev
+```
 
 The application will be available at http://localhost:3000
 
@@ -89,22 +74,18 @@ The application will be available at http://localhost:3000
 
 ```
 chat-with-pdf/
-├── app/                  # FastAPI backend
-│   ├── api/              # API endpoints
+├── app/                  # NextJS application
+│   ├── api/              # API routes
+│   ├── components/       # Reusable UI components
+│   ├── lib/              # Utility functions and services
 │   ├── services/         # Business logic, summarization, chat handling
 │   ├── models/           # Database models and schemas
-│   └── core/             # Core configuration
-├── frontend/             # React frontend application
-│   ├── src/
-│   │   ├── components/   # Reusable UI components
-│   │   ├── pages/        # Application pages
-│   │   ├── services/     # API client and services
-│   │   └── context/      # React context providers
-│   └── public/
+│   └── (routes)/         # Application pages and routes
+├── public/               # Static assets
 ├── tests/                # Unit and integration tests
 ├── scripts/              # Helper scripts
 ├── .env.example          # Example environment variables
-├── requirements.txt      # Python dependencies
+├── package.json          # Node.js dependencies
 ├── docker-compose.yml    # Docker Compose configuration
 ├── Dockerfile            # Docker configuration
 └── README.md             # This file
@@ -123,27 +104,20 @@ chat-with-pdf/
 
 The application can be deployed to various cloud platforms:
 
-#### Heroku
+#### Vercel
 
 ```sh
-heroku create
-git push heroku main
+npm install -g vercel
+vercel
 ```
 
-#### AWS Elastic Beanstalk
+#### AWS Amplify
 
-1. Install EB CLI:
-    ```sh
-    pip install awsebcli
-    ```
-2. Initialize EB:
-    ```sh
-    eb init
-    ```
-3. Deploy:
-    ```sh
-    eb create chat-with-pdf-env
-    ```
+```sh
+npm install -g @aws-amplify/cli
+amplify init
+amplify publish
+```
 
 ## Usage
 
@@ -160,7 +134,7 @@ git push heroku main
 * **Issue**: Summarization takes too long.
   * **Solution**: Large documents are processed in chunks. Check server logs for specific errors.
 
-* **Issue**: OpenAI API errors.
+* **Issue**: GROQ API errors.
   * **Solution**: Verify your API key is valid and has sufficient credits.
 
 * **Issue**: WebSocket connection failures.
